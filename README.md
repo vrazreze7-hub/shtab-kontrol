@@ -2,15 +2,12 @@
 
 Задачник / трекер задач, задеплоенный из Google Docs.
 
-## Просмотр сайта
-
-После включения GitHub Pages сайт будет доступен по адресу:
+## Сайт
 
 https://vrazreze7-hub.github.io/shtab-kontrol/
 
-### Как включить GitHub Pages:
-1. Перейдите в Settings репозитория
-2. Pages
-3. Source: Deploy from a branch
-4. Branch: main / (root)
-5. Save
+### Включение GitHub Pages
+1. Settings → Pages
+2. Source: Deploy from a branch
+3. Branch: main / (root)
+4. Save
