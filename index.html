@@ -1,1 +1,1135 @@
-<!doctype html><html><head><meta charset=utf8> ... [full content would go here, but for practicality using the file]
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Штаб: Всемогущий контроль</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080a16; --bg2:#10152e; --card:#141a33; --card2:#1a2140;
+  --line:#242c4d; --line2:#313a60;
+  --ink:#eef1f9; --dim:#98a2c4; --faint:#6b76a0;
+  --label:#5f8cff; --accent:#2fd6e8; --btn:#ff8a3d;
+  --late:#ff8a7a; --late-bg:#2a1620; --wait:#ffc46b; --wait-bg:#2a2016;
+  --done:#6fd6a8; --dec:#b79bff;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#080a16;}}
+:root[data-theme="dark"]{--bg:#080a16;}
+*{box-sizing:border-box;}
+[hidden]{display:none!important;}
+#stats[hidden]+.bar{margin-top:22px;}
+html,body{background:var(--bg);}
+body{color:var(--ink);font-family:"Golos Text",-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.45;margin:0;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+.wrap{max-width:1160px;margin-inline:auto;padding:32px 24px 72px;}
+@media(max-width:640px){.wrap{padding:24px 16px 56px;}}
+a{color:var(--accent);}
+button{font:inherit;}
+.top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px;}
+h1{font-size:clamp(22px,3.4vw,30px);font-weight:700;margin:0 0 6px;letter-spacing:-.01em;}
+.sub{color:var(--dim);margin:0;max-width:62ch;}
+.who{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 12px;}
+.who span{font-size:12px;color:var(--faint);}
+.who b{font-weight:600;}
+.lnk{background:none;border:0;color:var(--accent);cursor:pointer;padding:6px 8px;border-radius:10px;}
+.lnk:hover{background:var(--card2);}
+
+
+.banner{margin:20px 0 0;background:linear-gradient(135deg,#17224a,#10152e);border:1px solid var(--line2);border-radius:20px;padding:18px 20px;}
+.banner h2{font-size:17px;margin:0 0 4px;}
+.banner p{color:var(--dim);margin:0 0 12px;font-size:13px;}
+.pick{display:flex;flex-wrap:wrap;gap:6px;}
+.pick button{background:var(--card);border:1px solid var(--line2);color:var(--ink);border-radius:12px;padding:8px 13px;cursor:pointer;}
+.pick button:hover{border-color:var(--accent);}
+.note{margin:16px 0 0;padding:12px 16px;border-radius:14px;background:var(--wait-bg);color:var(--wait);font-size:13px;}
+
+
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 18px;}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 15px;display:flex;align-items:baseline;gap:9px;}
+.stat b{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:500;}
+.stat span{font-size:12px;color:var(--dim);white-space:nowrap;}
+.stat.late{border-color:#5a2a2a;} .stat.late b{color:var(--late);}
+.stat.wait b{color:var(--wait);} .stat.free b{color:var(--late);} .stat.dec b{color:var(--dec);}
+
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.tabs{display:flex;gap:4px;background:var(--bg2);padding:4px;border-radius:16px;flex-wrap:wrap;}
+.tab{border:0;background:transparent;color:var(--dim);padding:8px 14px;border-radius:12px;font-weight:500;cursor:pointer;}
+.tab[aria-selected="true"]{background:var(--card2);color:var(--ink);}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;}
+select,input,textarea{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:9px 12px;font:inherit;}
+input[type=search]{min-width:200px;}
+input[type=date]{color-scheme:dark;}
+@media(max-width:640px){.ctl{width:100%;} .ctl select,.ctl input{flex:1;min-width:0;}}
+
+
+.cols{display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;align-items:flex-start;}
+.col{flex:0 0 288px;background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.colhead,.ghead{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--label);}
+.colname,.gname{font-weight:600;font-size:13px;}
+.colnum,.gnum{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);}
+.stack{display:flex;flex-direction:column;gap:9px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;align-items:start;}
+.group{background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.group.alarm{border-color:#5a2a2a;}
+.ghead{margin-bottom:4px;}
+.ghint{font-size:12px;color:var(--faint);margin-bottom:12px;}
+
+
+.card{display:block;width:100%;text-align:left;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;cursor:pointer;}
+.card:hover,.card:focus-visible{border-color:var(--line2);outline:none;}
+.card.late{border-color:#5a2a2a;}
+.card.dec{border-style:dashed;}
+.ttl{font-weight:500;line-height:1.38;word-break:break-word;}
+.card.done .ttl{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--faint);}
+.meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:3px 8px;border-radius:8px;background:var(--card2);color:var(--dim);white-space:nowrap;}
+.chip.who2{background:#17224a;color:#9fb6ff;}
+.chip.is-late{background:var(--late-bg);color:var(--late);}
+.chip.wait{background:var(--wait-bg);color:var(--wait);}
+.chip.free{background:var(--late-bg);color:var(--late);}
+.chip.dec{background:#241b42;color:var(--dec);}
+.chip.cm{background:transparent;color:var(--faint);padding-inline:2px;}
+.empty{color:var(--faint);font-size:12.5px;padding:10px 2px;}
+.loading{color:var(--faint);padding:40px 0;text-align:center;}
+
+
+.scrim{position:fixed;inset:0;background:rgba(4,6,14,.66);display:none;z-index:20;}
+.scrim.on{display:block;}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--bg2);border-left:1px solid var(--line2);
+  z-index:21;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;}
+.drawer.on{transform:none;}
+.dhead{display:flex;align-items:flex-start;gap:10px;padding:20px 22px 14px;border-bottom:1px solid var(--line);}
+.dnum{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);}
+.dttl{font-size:18px;font-weight:600;line-height:1.3;margin:4px 0 0;}
+.x{margin-left:auto;background:var(--card);border:1px solid var(--line);color:var(--dim);width:34px;height:34px;border-radius:10px;cursor:pointer;flex:0 0 auto;}
+.dbody{overflow-y:auto;padding:18px 22px 24px;flex:1;}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.fields label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--label);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.fields label.wide{grid-column:1/-1;}
+.fields select,.fields input{width:100%;text-transform:none;letter-spacing:0;font-weight:400;}
+.saved{font-size:12px;color:var(--done);min-height:18px;margin:-6px 0 10px;}
+.dtext{color:var(--dim);font-size:13.5px;line-height:1.55;white-space:pre-wrap;margin:0 0 10px;}
+.dsrc{font-size:12px;color:var(--faint);margin:0 0 4px;}
+.dupd{font-size:12px;color:var(--faint);margin:0 0 18px;}
+.h3{font-size:11px;color:var(--label);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:20px 0 10px;}
+.cmt{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;}
+.cmt .by{font-size:12px;color:#9fb6ff;font-weight:600;}
+.cmt .at{font-size:11px;color:var(--faint);margin-left:6px;font-family:"IBM Plex Mono",monospace;}
+.cmt .tx{margin-top:4px;white-space:pre-wrap;word-break:break-word;}
+.compose{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.compose textarea{min-height:72px;resize:vertical;}
+.go{align-self:flex-end;background:linear-gradient(135deg,#ff9f55,var(--btn));color:#1a0e04;border:0;border-radius:12px;padding:9px 18px;font-weight:600;cursor:pointer;}
+.go:disabled{opacity:.5;cursor:default;}
+/* события */
+.month{background:linear-gradient(135deg,#141c40,#10152e);border:1px solid var(--line2);border-radius:24px;padding:22px 24px;margin-bottom:16px;}
+.mtop{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;margin-bottom:14px;}
+.mlbl{font-size:11px;color:var(--label);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.mnav{display:flex;align-items:center;gap:6px;}
+.mnav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:32px;height:32px;border-radius:10px;cursor:pointer;}
+.mnav b{min-width:120px;text-align:center;font-weight:600;}
+.mfact{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;}
+.mfact .big{font-family:"IBM Plex Mono",monospace;font-size:clamp(30px,5vw,44px);font-weight:500;letter-spacing:-.02em;}
+.mfact .of{color:var(--dim);font-size:15px;}
+.mfact .pct{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--accent);}
+.track{height:10px;background:var(--card);border-radius:6px;margin:14px 0 16px;overflow:hidden;}
+.fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--label));border-radius:6px;}
+.fill.mini{background:var(--label);}
+.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.mcell{background:rgba(8,10,22,.45);border:1px solid var(--line);border-radius:14px;padding:10px 13px;}
+.mcell b{display:block;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:500;}
+.mcell span{font-size:12px;color:var(--dim);}
+.mplan{background:none;border:0;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-left:8px;}
+.evhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 12px;flex-wrap:wrap;}
+.evhead h2{font-size:17px;margin:0;}
+.evhead p{margin:2px 0 0;font-size:12.5px;color:var(--faint);}
+.add{background:var(--card);border:1px dashed var(--line2);color:var(--ink);border-radius:12px;padding:9px 14px;cursor:pointer;}
+.evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.ev{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;}
+.ev.stale{border-color:#4a3a1e;}
+.evt{display:flex;align-items:flex-start;gap:8px;}
+.evt h3{font-size:15px;font-weight:600;margin:0;line-height:1.3;}
+.evt .when{font-size:12px;color:var(--faint);margin-top:2px;}
+.evt button{margin-left:auto;flex:0 0 auto;}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.num{background:var(--card2);border-radius:12px;padding:9px 11px;}
+.num .k{font-size:11px;color:var(--dim);}
+.num .v{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:500;margin-top:2px;}
+.num .p{font-size:11px;color:var(--faint);font-family:"IBM Plex Mono",monospace;}
+.num .v.na{color:var(--faint);font-size:14px;}
+.num .track{height:5px;margin:7px 0 0;}
+.evnote{font-size:12.5px;color:var(--dim);margin:0;}
+.evupd{font-size:11px;color:var(--faint);}
+.evupd.old{color:var(--wait);}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));max-height:calc(100% - 32px);overflow-y:auto;
+  background:var(--bg2);border:1px solid var(--line2);border-radius:22px;padding:20px 22px;z-index:22;display:none;}
+.modal.on{display:block;}
+.modal h3{margin:0 0 4px;font-size:17px;}
+.modal .hint{font-size:12.5px;color:var(--faint);margin:0 0 14px;}
+.mbtns{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;}
+/* бриф и планёрки */
+.bhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:14px;}
+.bhead h2{font-size:18px;margin:0;}
+.bhead p{margin:3px 0 0;color:var(--faint);font-size:12.5px;}
+.bprog{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--dim);}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;align-items:start;}
+.bq{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;}
+.bq.ok{border-color:#1f4a3a;}
+.bq .q{font-weight:500;line-height:1.4;}
+.bq .tk{display:inline-block;margin-top:6px;background:none;border:0;padding:0;color:var(--accent);font-size:12px;cursor:pointer;text-align:left;}
+.bq .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.bq .acts button{background:var(--card2);border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:6px 10px;font-size:12.5px;cursor:pointer;}
+.bq .acts button:hover{border-color:var(--accent);}
+.bq .acts input[type=date]{padding:5px 8px;font-size:12.5px;}
+.bq .ans{margin-top:9px;font-size:12.5px;color:var(--done);}
+.bq .row2{display:none;gap:6px;margin-top:8px;}
+.bq.typing .row2{display:flex;}
+.bq .row2 input{flex:1;min-width:0;}
+.up{background:var(--bg2);border:1px solid var(--line2);border-radius:22px;padding:18px 20px;margin-bottom:16px;}
+.up h2{font-size:17px;margin:0 0 4px;}
+.up p{margin:0 0 12px;color:var(--dim);font-size:13px;}
+.up .fields{grid-template-columns:2fr 1fr;}
+.up textarea{width:100%;min-height:90px;resize:vertical;}
+.drop{border:1px dashed var(--line2);border-radius:14px;padding:14px;text-align:center;color:var(--dim);font-size:13px;cursor:pointer;margin-bottom:10px;}
+.drop.on{border-color:var(--accent);color:var(--ink);}
+.mlist{display:flex;flex-direction:column;gap:8px;}
+.mrow{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;}
+.mrow b{font-weight:600;}
+.mrow .sum{flex-basis:100%;font-size:12.5px;color:var(--dim);}
+.st{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:3px 8px;border-radius:8px;background:var(--card2);color:var(--dim);}
+.st.new{background:#17224a;color:#9fb6ff;} .st.done{background:#123227;color:var(--done);} .st.skipped{background:var(--wait-bg);color:var(--wait);} .st.error{background:var(--late-bg);color:var(--late);}
+.chip.ai{background:#1d1840;color:#c7b8ff;}
+.ai{background:linear-gradient(135deg,#1a1640,#141a33);border:1px solid #3a3370;border-radius:16px;padding:13px 15px;}
+.ai .tk{display:inline-block;margin-top:6px;background:none;border:0;padding:0;color:var(--accent);font-size:12px;cursor:pointer;text-align:left;}
+.ai .lbl{font-size:11px;color:#c7b8ff;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.ai .off{font-weight:500;margin-top:5px;line-height:1.4;}
+.ai .how{font-size:12.5px;color:var(--dim);margin-top:6px;white-space:pre-wrap;}
+.ai .need{font-size:12.5px;color:var(--wait);margin-top:6px;}
+.ai .res{font-size:12.5px;color:var(--done);margin-top:6px;word-break:break-word;}
+.ai .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.ai .acts button{background:var(--card2);border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:6px 11px;font-size:12.5px;cursor:pointer;}
+.ai .acts button.yes{background:#2b2560;border-color:#6b5cd6;}
+.ghost{background:none;border:1px solid var(--line2);color:var(--dim);border-radius:12px;padding:9px 14px;cursor:pointer;}
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);}
+
+
+/* ---- отдел продаж ---- */
+.sl-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:4px;}
+.sl-k{background:rgba(8,10,22,.45);border:1px solid var(--line);border-radius:14px;padding:10px 13px;}
+.sl-k b{display:block;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:500;}
+.sl-k span{font-size:12px;color:var(--dim);}
+.sl-sec{margin:26px 0 12px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;}
+.sl-sec h2{font-size:17px;margin:0;}
+.sl-sec p{margin:2px 0 0;font-size:12.5px;color:var(--faint);max-width:70ch;}
+.sl-today{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.sl-do{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--btn);border-radius:14px;padding:13px 15px;display:flex;flex-direction:column;gap:6px;}
+.sl-do b{font-weight:600;}
+.sl-do .w{font-size:12px;color:var(--accent);}
+.sl-do p{margin:0;font-size:13px;color:var(--dim);}
+.sl-mgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.sl-m{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;}
+.sl-m .n{font-weight:600;}
+.sl-m .v{font-family:"IBM Plex Mono",monospace;font-size:24px;color:var(--accent);margin:4px 0;}
+.sl-m .t{font-size:12.5px;color:var(--dim);}
+.sl-bar{height:6px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:6px;}
+.sl-bar i{display:block;height:100%;background:var(--label);}
+.sl-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
+.sl-list{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:14px 16px;min-width:0;}
+.sl-list h3{margin:0 0 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--label);}
+.sl-list ol,.sl-list ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;}
+.sl-seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.sl-seg button{background:var(--card);border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:7px 12px;cursor:pointer;}
+.sl-seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--ink);}
+.sl-tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);}
+.sl-tbl table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px;}
+.sl-tbl th,.sl-tbl td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+.sl-tbl th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--label);white-space:nowrap;}
+.sl-tbl tr:last-child td{border-bottom:0;}
+.sl-tbl td.r{text-align:right;font-family:"IBM Plex Mono",monospace;white-space:nowrap;}
+.sl-tbl td.nm{font-weight:600;white-space:nowrap;}
+.sl-tbl .fl{color:var(--wait);font-size:12px;}
+.sl-st{font-size:11.5px;border-radius:6px;padding:2px 7px;background:rgba(95,140,255,.16);white-space:nowrap;}
+.sl-st.new{background:var(--wait-bg);color:var(--wait);}
+.sl-fn{display:flex;flex-direction:column;gap:8px;}
+.sl-fr{display:grid;grid-template-columns:minmax(150px,1.4fr) 2fr 110px;gap:10px;align-items:center;font-size:13px;}
+.sl-fr .b{height:16px;background:var(--card);border-radius:5px;position:relative;overflow:hidden;}
+.sl-fr .b i{position:absolute;left:0;top:0;bottom:0;background:var(--label);opacity:.45;}
+.sl-fr .b em{position:absolute;left:0;top:0;bottom:0;background:var(--done);}
+.sl-fr .r{font-family:"IBM Plex Mono",monospace;text-align:right;font-size:12.5px;}
+@media(max-width:640px){.sl-fr{grid-template-columns:1fr 90px;}.sl-fr .b{grid-column:1/-1;grid-row:2;}}
+.sl-links{display:flex;flex-wrap:wrap;gap:8px;}
+.sl-links a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 12px;}
+.sl-links a:hover{border-color:var(--accent);}
+.sl-links a.pg{background:var(--btn);color:#14100c;border-color:var(--btn);font-weight:600;}
+.sl-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+/* ---- книга заклинаний (промты) ---- */
+.pr-top{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;margin-bottom:14px;}
+.pr-top h2{font-size:18px;margin:0;}
+.pr-top p{margin:3px 0 0;color:var(--faint);font-size:12.5px;max-width:70ch;}
+.pr-top input{min-width:240px;}
+.pr-grp{margin:18px 0 10px;font-size:11px;color:var(--label);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.pr-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start;}
+.pr{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;}
+.pr h3{margin:0;font-size:15px;line-height:1.35;}
+.pr .meta{margin-top:0;}
+.pr .use{font-size:12.5px;color:var(--dim);margin:0;}
+.pr .acts{display:flex;flex-wrap:wrap;gap:6px;}
+.pr .acts button{background:var(--card2);border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:6px 11px;font-size:12.5px;cursor:pointer;}
+.pr .acts button.yes{background:linear-gradient(135deg,#ff9f55,var(--btn));color:#1a0e04;border:0;font-weight:600;}
+.pr .acts button:hover{border-color:var(--accent);}
+.pr pre{margin:0;max-height:420px;overflow:auto;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;font:12.5px/1.5 "IBM Plex Mono",ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;color:var(--ink);}
+.pr .ok{font-size:12px;color:var(--done);min-height:16px;}
+</style>
+
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Штаб: ВСЕМОГУЩИЙ КОНТРОЛЬ</h1>
+      <p class="sub">Сюда, как совы в Большой зал, слетаются все задачи с планёрок. Меняйте статус и срок прямо в карточке — команда увидит это быстрее, чем вы скажете «Акцио, дедлайн».</p>
+    </div>
+    <div class="who" id="who" hidden><span>Волшебник</span><b id="whoName"></b><button class="lnk" id="whoChange" type="button">сменить мантию</button></div>
+  </div>
+  <div id="banner"></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar">
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="tab" role="tab" data-v="mine" type="button">Мои задачи</button>
+      <button class="tab" role="tab" data-v="sales" type="button">Гринготтс продаж</button>
+      <button class="tab" role="tab" data-v="brief" type="button">Утренний допрос</button>
+      <button class="tab" role="tab" data-v="ai" type="button">Эльф Claude может</button>
+      <button class="tab" role="tab" data-v="prompts" type="button">Книга заклинаний</button>
+      <button class="tab" role="tab" data-v="events" type="button">Галлеоны и мероприятия</button>
+      <button class="tab" role="tab" data-v="meet" type="button">Омут планёрок</button>
+      <button class="tab" role="tab" data-v="board" type="button">Доска</button>
+      <button class="tab" role="tab" data-v="people" type="button">По волшебникам</button>
+      <button class="tab" role="tab" data-v="proj" type="button">По проектам</button>
+      <button class="tab" role="tab" data-v="agenda" type="button">Громовещатель</button>
+    </div>
+    <div class="ctl">
+      <select id="fp" aria-label="Проект"></select>
+      <select id="fw" aria-label="Исполнитель"></select>
+      <input id="fq" type="search" placeholder="Акцио, задача…" aria-label="Поиск по задачам">
+    </div>
+  </div>
+  <div id="view"><div class="loading">Призываю задачи… Совы уже в пути.</div></div>
+  <footer><button class="lnk" id="archBtn" type="button" hidden style="padding:0;margin-bottom:8px;display:block"></button>Планёрки из tl;dv, MyMeet и загрузок Claude разбирает сам — без палочки, зато с усердием домового эльфа. Вопросы команде собирает по будням к 8:40. Цифры по мероприятиям вносят ответственные; если их не трогали больше трёх дней, карточка начинает тревожно светиться, как Громовещатель перед взрывом.</footer>
+</div>
+
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-label="Задача">
+  <div class="dhead">
+    <div><div class="dnum" id="dNum"></div><div class="dttl" id="dTtl"></div></div>
+    <button class="x" id="dClose" type="button" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="dbody">
+    <div class="fields">
+      <label>Статус<select id="eSt"></select></label>
+      <label>Срок<input id="eDue" type="date"></label>
+      <label class="wide">Исполнитель<select id="eWho"></select></label>
+    </div>
+    <div class="saved" id="saved"></div>
+    <p class="dtext" id="dDet"></p>
+    <p class="dsrc" id="dSrc"></p>
+    <p class="dupd" id="dUpd"></p>
+    <div id="dAi"></div>
+    <div class="h3">Комментарии</div>
+    <div id="cList"><div class="empty">Тишина, как в Запретной секции после отбоя.</div></div>
+    <div class="compose" id="compose">
+      <textarea id="cText" placeholder="Что сделано, какой дементор мешает, какой вопрос"></textarea>
+      <button class="go" id="cSend" type="button">Отправить совой</button>
+    </div>
+  </div>
+</aside>
+
+
+<div class="modal" id="evModal" role="dialog" aria-label="Цифры мероприятия">
+  <h3 id="emTtl">Мероприятие</h3>
+  <p class="hint" id="emHint">Вносите цифры как есть на сегодня — штаб посчитает итог месяца сам. Арифмантику берём на себя.</p>
+  <div class="fields">
+    <label class="wide" id="emNameL">Название<input id="emName" type="text" maxlength="120"></label>
+    <label class="wide">Дата или период<input id="emWhen" type="text" maxlength="80" placeholder="например, 21–22 ноября"></label>
+    <label>Регистраций сейчас<input id="emRegs" type="number" min="0" step="1" inputmode="numeric"></label>
+    <label>План регистраций<input id="emRegsPlan" type="number" min="0" step="1" inputmode="numeric"></label>
+    <label><span id="emSalesL">Продажи за месяц, ₽</span><input id="emSales" type="number" min="0" step="100" inputmode="numeric"></label>
+    <label>План продаж, ₽<input id="emSalesPlan" type="number" min="0" step="1000" inputmode="numeric"></label>
+    <label class="wide">Заметка<input id="emNote" type="text" maxlength="200" placeholder="что важно знать"></label>
+  </div>
+  <div class="saved" id="emSaved"></div>
+  <div class="mbtns">
+    <button class="ghost" id="emArchive" type="button">Спрятать в Выручай-комнату</button>
+    <span style="display:flex;gap:8px;margin-left:auto"><button class="ghost" id="emCancel" type="button">Отмена</button><button class="go" id="emSave" type="button">Сохранить</button></span>
+  </div>
+</div>
+<div class="modal" id="planModal" role="dialog" aria-label="План месяца">
+  <h3>План на месяц</h3>
+  <p class="hint">Сумма в галлеонах — ладно, в рублях, — к которой идём по всем мероприятиям вместе.</p>
+  <div class="fields"><label class="wide">План, ₽<input id="pmPlan" type="number" min="0" step="10000" inputmode="numeric"></label></div>
+  <div class="saved" id="pmSaved"></div>
+  <div class="mbtns"><span style="display:flex;gap:8px;margin-left:auto"><button class="ghost" id="pmCancel" type="button">Отмена</button><button class="go" id="pmSave" type="button">Сохранить</button></span></div>
+</div>
+
+
+<script>
+(function(){
+  var SEED_AT="15.10.2026 14:16 МСК"; var SEED=[{"_id": "З-314", "num": "З-314", "title": "Навести порядок в группе клуба в Telegram: 5 тем, закрепы, уборка — по инструкции", "assignee": "Юля", "status": "К выполнению", "due": "2026-10-16", "project": "Клуб", "source": "Екатерина Нечаева в чате 15.10", "type": "", "archived": false, "details": ""}, {"_id": "З-315", "num": "З-315", "title": "Омут памяти для эфира «Ассертивность»: запись, расшифровка MyMeet, методичка", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-16", "project": "Клуб", "source": "Расписание club-2610-11 15.10", "type": "", "archived": false, "details": ""}, {"_id": "З-316", "num": "З-316", "title": "Анонс зелья: после эфира «Ассертивность» — опубликовать запись и методичку в чате", "assignee": "Юля", "status": "Ждём ответа", "due": "2026-10-16", "project": "Клуб", "source": "Расписание club-2610-11 15.10", "type": "", "archived": false, "details": ""}, {"_id": "З-317", "num": "З-317", "title": "Омут памяти для эфира «Как подмять под себя жёсткого переговорщика»: запись, расшифровка MyMeet, методичка", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-16", "project": "Мероприятия и тренинги", "source": "Расписание open-1510-pereg 15.10", "type": "", "archived": false, "details": ""}, {"_id": "З-318", "num": "З-318", "title": "Анонс зелья: после эфира «Как подмять под себя жёсткого переговорщика» — опубликовать запись и методичку в чате", "assignee": "Юля", "status": "Ждём ответа", "due": "2026-10-16", "project": "Мероприятия и тренинги", "source": "Расписание open-1510-pereg 15.10", "type": "", "archived": false, "details": ""}, {"_id": "З-048", "num": "З-048", "title": "Найти монтажёра для подкаста: написать Олейникову, спросить Лепнёву", "assignee": "Штаб", "status": "На проверке", "due": "2026-09-17", "project": "Подкаст и медиа", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-049", "num": "З-049", "title": "Отправить Лепнёвой материалы по монтажу", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Подкаст и медиа", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-054", "num": "З-054", "title": "Инструкция и KPI для Алёны: все оплатившие доходят до практики (зарплата 25 000 ₽)", "assignee": "Штаб", "status": "На проверке", "due": "2026-09-19", "project": "Команда и процессы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-061", "num": "З-061", "title": "Проверить, куда ведёт чек-лист «Токсичное окружение»", "assignee": "Ксения", "status": "К выполнению", "due": "", "project": "Психзащиты", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-062", "num": "З-062", "title": "Переименовать продукты психзащит в GetCourse", "assignee": "Олег", "status": "К выполнению", "due": "", "project": "Институт · сайт и тех", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-063", "num": "З-063", "title": "Посмотреть картину по клубу: отток и как работает Таня", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Клуб", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-065", "num": "З-065", "title": "Познакомить кандидата-продажника от Ксении с Настей", "assignee": "Ксения", "status": "К выполнению", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-066", "num": "З-066", "title": "Запросить у Тани материалы по клубу для контента", "assignee": "Ксения", "status": "Ждём ответа", "due": "", "project": "Клуб", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-068", "num": "З-068", "title": "Складывать все расходы в одно место до передачи учёта", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-069", "num": "З-069", "title": "Заполнить таблицу продаж до текущей даты и передать Насте", "assignee": "Штаб", "status": "На проверке", "due": "2026-09-16", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-070", "num": "З-070", "title": "Оплатить бронь студии", "assignee": "Екатерина Нечаева", "status": "К выполнению", "due": "", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-072", "num": "З-072", "title": "Передать Насте работу по базе, которую дал Михаил", "assignee": "Настя", "status": "К выполнению", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-079", "num": "З-079", "title": "Разобраться до конца сентября, есть ли перспектива в проекте Бочар", "assignee": "Штаб", "status": "В работе", "due": "2026-09-30", "project": "Саша Бочар", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-080", "num": "З-080", "title": "Настроить СММ в проекте Бочар за счёт самого проекта", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Саша Бочар", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-081", "num": "З-081", "title": "Сдать отчёт, что сделано по «Книге контент-менеджера» с 8 сентября", "assignee": "Ксения", "status": "К выполнению", "due": "2026-09-15", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-082", "num": "З-082", "title": "Провести созвон в 17:00 — могут ли Ксения и Маша работать по регламенту", "assignee": "Штаб", "status": "На проверке", "due": "2026-09-15", "project": "Команда и процессы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-083", "num": "З-083", "title": "Закрепить за Машей всю выкладку рилс и сторис", "assignee": "Штаб", "status": "К выполнению", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-084", "num": "З-084", "title": "Зафиксировать время выкладки рилс: 10:00, не позднее 11:00", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-085", "num": "З-085", "title": "Написать регламент для Маши: что делать с материалами из чата контента", "assignee": "Ксения", "status": "На проверке", "due": "", "project": "Команда и процессы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-086", "num": "З-086", "title": "Зайти в аккаунт Михаила и посмотреть статистику", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-087", "num": "З-087", "title": "Ознакомиться с отложенными публикациями в бизнес-сайте", "assignee": "Штаб", "status": "К выполнению", "due": "2026-09-15", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-088", "num": "З-088", "title": "Наладить цикл: воскресенье — итоги недели, понедельник — анонс недели", "assignee": "Ксения", "status": "К выполнению", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-089", "num": "З-089", "title": "Обеспечить корреспондентские сторис с каждого вебинара", "assignee": "Штаб", "status": "К выполнению", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-140", "num": "З-140", "title": "Посчитать зарплату отдела продаж за сентябрь, сверить с Юлей и передать Кате Лазаревой", "assignee": "Настя", "status": "К выполнению", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-144", "num": "З-144", "title": "Сделать скрин взятия заявки Ермаковой в работу и отправить Андрею Гуляеву", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-145", "num": "З-145", "title": "Наладить связь менеджера с клиентом во всех каналах и подключить рабочий Telegram Юли", "assignee": "Штаб", "status": "К выполнению", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-146", "num": "З-146", "title": "Решение: на «Потрындельниках» Андрей ведёт заявки и собесы сам, только на свои продукты", "assignee": "", "status": "Из планёрки", "due": "", "project": "Продажи и финансы", "source": "", "type": "решение", "archived": false, "details": ""}, {"_id": "З-147", "num": "З-147", "title": "Решение: с эфиров Института с Андреем — только анкета на собес в отдел продаж Института", "assignee": "", "status": "Из планёрки", "due": "", "project": "Продажи и финансы", "source": "", "type": "решение", "archived": false, "details": ""}, {"_id": "З-148", "num": "З-148", "title": "Свести цены психзащит по лендингу: сайт Института 54 700 ₽ → 95 000 ₽ за «Практику + Превосходство 5.0»", "assignee": "Штаб", "status": "На проверке", "due": "", "project": "Психзащиты", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-149", "num": "З-149", "title": "Назначить еженедельный созвон с Ксенией по СММ втроём, 30–40 минут", "assignee": "", "status": "Из планёрки", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-150", "num": "З-150", "title": "Обсудить перестройку СММ-каналов: папка чатов, канал анонсов и контентный канал", "assignee": "", "status": "Из планёрки", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-151", "num": "З-151", "title": "Реализовать воронку по раппорту и пять лид-магнитов с Михаилом, записанных в студии", "assignee": "", "status": "На проверке", "due": "", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-152", "num": "З-152", "title": "Пройтись по всем сотрудникам: что делали хорошо, что нет и что с этим делать", "assignee": "Штаб", "status": "К выполнению", "due": "", "project": "Команда и процессы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-153", "num": "З-153", "title": "Изучить платформу задач, которую прислала Екатерина, и продолжить созвон", "assignee": "Штаб", "status": "К выполнению", "due": "", "project": "Команда и процессы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-239", "num": "З-239", "title": "Вести таблицу генератора UTM-меток вместо Кати Лазаревой", "assignee": "Настя", "status": "К выполнению", "due": "", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-134", "num": "З-134", "title": "Скинуть отделу продаж ссылку на чат треугольника Карпмана", "assignee": "Алёна", "status": "К выполнению", "due": "2026-10-02", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-106", "num": "З-106", "title": "Поставить серию 1 писем с дублем в бот — старт 5 октября", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-04", "project": "Сильная речь", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-107", "num": "З-107", "title": "Собрать тренажёр в Telegram на GetCourse и протестировать", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-04", "project": "Сильная речь", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-098", "num": "З-098", "title": "Распределить материалы, подготовленные на октябрь–ноябрь, по ресурсам", "assignee": "Ксения", "status": "К выполнению", "due": "2026-10-05", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-100", "num": "З-100", "title": "Поставить контент в отложку на ресурсах Института и Михаила Пелехатого", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-05", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-101", "num": "З-101", "title": "Утвердить с Андреем Гуляевым марафон по интеграции навыка", "assignee": "", "status": "Ждём ответа", "due": "2026-10-05", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-184", "num": "З-184", "title": "Сообщить Екатерине, какая сумма лежит на точке по АГ-проекту", "assignee": "Андрей Гуляев", "status": "К выполнению", "due": "2026-10-05", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-110", "num": "З-110", "title": "Пост в клубный чат 5 октября и вопрос для обсуждения 7 октября", "assignee": "Юля", "status": "К выполнению", "due": "2026-10-07", "project": "Сильная речь", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-195", "num": "З-195", "title": "GetCourse к практике «Диссоциация» 8.10: промокод ДИССОЦИАЦИЯ −15%, ссылки на тарифы, гипноз 10 000 ₽", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-08", "project": "Превосходство 5.0", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-111", "num": "З-111", "title": "Выкладка прогрева в 10:00 и сторис-опрос по дню 22", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-09", "project": "Сильная речь", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-113", "num": "З-113", "title": "Личные сообщения по скрипту участникам вебинаров с 6 октября", "assignee": "Настя", "status": "К выполнению", "due": "2026-10-09", "project": "Сильная речь", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-220", "num": "З-220", "title": "Обновить лендинг «Этики коммуникации»: даты 19–21.10, для клуба бесплатно", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-13", "project": "Институт · сайт и тех", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-237", "num": "З-237", "title": "Утренняя сводка GetCourse: новые в базе за 12.10 и изменения по тренингам", "assignee": "Настя", "status": "К выполнению", "due": "2026-10-13", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-240", "num": "З-240", "title": "Перевести оплативших «Этику коммуникации» на сайте Института в GetCourse «Навыков будущего»", "assignee": "Настя", "status": "К выполнению", "due": "2026-10-13", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-216", "num": "З-216", "title": "Поставить в расписание и анонсировать в клубе «Ассертивность» 15.10 в 10:00 (Михаил + Юрий Беспалов)", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-14", "project": "Клуб", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-217", "num": "З-217", "title": "Собрать вебинар «Как подмять под себя жёсткого переговорщика» 15.10, 11:00–12:00: комната и лендинг", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-218", "num": "З-218", "title": "Подготовить рассылки и Stories к вебинару 15.10 с оффером «Этики коммуникации»", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-14", "project": "Контент и СММ", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-219", "num": "З-219", "title": "Разослать анонс вебинара 15.10 по своим чатам", "assignee": "Михаил Пелехатый", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-221", "num": "З-221", "title": "Сообщить оплатившим «Этику коммуникации» о переносе на 19–21.10", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-228", "num": "З-228", "title": "Внести на главную страницу школы все запланированные вебинары и тренинги", "assignee": "Штаб", "status": "К выполнению", "due": "2026-10-14", "project": "Институт · сайт и тех", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-275", "num": "З-275", "title": "Проверить и включить письма с Zoom, программные формы и процесс уведомления менеджера по воркшопам октября", "assignee": "Олег", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-276", "num": "З-276", "title": "Новые заявки на воркшопы и программы — связываться сразу и вести на «Превосходство. Начало»", "assignee": "Юля", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-279", "num": "З-279", "title": "Опубликовать пост Екатерины о вебинарах во всех своих источниках и чатах", "assignee": "Михаил Пелехатый", "status": "К выполнению", "due": "2026-10-14", "project": "Мероприятия и тренинги", "source": "", "type": "", "archived": false, "details": ""}, {"_id": "З-286", "num": "З-286", "title": "Утренняя сводка GetCourse: новые в базе за 13.10 и изменения по тренингам (с опозданием — утренний запуск не прошёл)", "assignee": "Настя", "status": "К выполнению", "due": "2026-10-14", "project": "Продажи и финансы", "source": "", "type": "", "archived": false, "details": ""}];
+
+  var DEF_ST = ["Из планёрки","К выполнению","В работе","Ждём ответа","На проверке","Готово"];
+  var DEF_PPL = ["Екатерина Нечаева","Катя Лазарева","Ксения","Маша","Олег","Мила","Алёна","Юля","Настя","Таня","Саша Бочар","Андрей Гуляев","Михаил Пелехатый","Ваня","Аня"];
+  var DEF_PRJ = ["Превосходство 5.0","Психзащиты","Марафон","Клуб","Контент и СММ","Элитный экспертный","Институт · сайт и тех","Продажи и финансы","Мероприятия и тренинги","Подкаст и медиа","Саша Бочар","Психотипы","Бал 31.10","Команда и процессы","Сильная речь"];
+  var ST = DEF_ST, PPL = DEF_PPL, PRJ = DEF_PRJ;
+  var S = {sales:null, slList:"open", briefs:[], meetings:[], assets:null, events:[], months:{}, ym:"", tasks:[], loaded:false, view:"mine", f:{p:"",w:"",q:""}, member:"", uid:null,
+           canWrite:true, db:null, user:null, open:null, unsubC:null, comments:[], picking:false};
+  var $ = function(id){ return document.getElementById(id); };
+
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  var MON = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+  function fmt(iso){ if(!iso) return ""; var p=iso.split("-"); return parseInt(p[2],10)+" "+MON[parseInt(p[1],10)-1]; }
+  function today(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function plusDays(n){ var d=new Date(); d.setDate(d.getDate()+n); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function isDone(t){ return t.status==="Готово"; }
+  function isLate(t){ return !!t.due && !isDone(t) && t.due < today(); }
+  function stamp(iso){ if(!iso) return ""; var d=new Date(iso); if(isNaN(d)) return "";
+    return d.getDate()+" "+MON[d.getMonth()]+", "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+  function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function load(k){ try{ return localStorage.getItem(k)||""; }catch(e){ return ""; } }
+
+
+  S.view = load("shtab.view") || "mine";
+  S.ym = today().slice(0,7);
+
+
+  /* ---------- фильтры и карточки ---------- */
+  function vis(){
+    var q=S.f.q.trim().toLowerCase();
+    return S.tasks.filter(function(t){
+      if (S.f.p && t.project!==S.f.p) return false;
+      if (S.f.w && t.assignee!==S.f.w) return false;
+      if (q){ var s=(t.num+" "+t.title+" "+(t.details||"")+" "+t.project+" "+t.assignee+" "+(t.source||"")).toLowerCase();
+        if (s.indexOf(q)<0) return false; }
+      return true;
+    });
+  }
+  function sorted(a){
+    return a.slice().sort(function(x,y){
+      var lx=isLate(x), ly=isLate(y); if (lx!==ly) return lx?-1:1;
+      var dx=x.due||"9999", dy=y.due||"9999"; return dx<dy?-1:dx>dy?1:0;
+    });
+  }
+  function card(t){
+    var late=isLate(t);
+    var c="card"+(late?" late":"")+(t.type==="решение"?" dec":"")+(isDone(t)?" done":"");
+    var m="";
+    if (t.assignee) m+='<span class="chip who2">'+esc(t.assignee)+'</span>';
+    else if (!isDone(t)) m+='<span class="chip free">без исполнителя</span>';
+    m+='<span class="chip">'+esc(t.project)+'</span>';
+    if (t.due) m+='<span class="chip'+(late?" is-late":"")+'">'+(late?"просрочено ":"до ")+fmt(t.due)+'</span>';
+    if (t.waiting && !isDone(t)) m+='<span class="chip wait">ждём: '+esc(t.waiting)+'</span>';
+    if (t.type==="решение") m+='<span class="chip dec">решение</span>';
+    if (t.claude && t.claude.state && t.claude.state!=="declined" && t.claude.state!=="skip") m+='<span class="chip ai">'+esc(AIST[t.claude.state]||"Claude")+'</span>';
+    if (t.comments) m+='<span class="chip cm">комментариев: '+t.comments+'</span>';
+    if (t.archived) m+='<span class="chip">архив</span>';
+    return '<button type="button" class="'+c+'" data-id="'+esc(t._id)+'"><div class="ttl">'+esc(t.title)+'</div><div class="meta">'+m+'</div></button>';
+  }
+  function columns(groups){
+    return '<div class="cols">'+groups.map(function(g){
+      return '<section class="col"><div class="colhead"><span class="dot"'+(g.color?' style="background:'+g.color+'"':'')+'></span>'
+        +'<span class="colname">'+esc(g.name)+'</span><span class="colnum">'+g.items.length+'</span></div>'
+        +'<div class="stack">'+(g.items.length?sorted(g.items).map(card).join(""):'<div class="empty">пусто</div>')+'</div></section>';
+    }).join("")+'</div>';
+  }
+  function grid(groups, emptyText){
+    var live=groups.filter(function(g){ return g.items.length; });
+    if (!live.length) return '<div class="empty">'+esc(emptyText||"Ничего не найдено. Тут бессильна даже Карта Мародёров.")+'</div>';
+    return '<div class="grid">'+live.map(function(g){
+      return '<section class="group'+(g.alarm?" alarm":"")+'"><div class="ghead"><span class="gname">'+esc(g.name)+'</span><span class="gnum">'+g.items.length+'</span></div>'
+        +(g.hint?'<div class="ghint">'+esc(g.hint)+'</div>':'')
+        +'<div class="stack">'+sorted(g.items).map(card).join("")+'</div></section>';
+    }).join("")+'</div>';
+  }
+
+
+  /* ---------- отрисовка ---------- */
+  function renderStats(){
+    var open=S.tasks.filter(function(t){ return !isDone(t); });
+    var n=function(f){ return open.filter(f).length; };
+    $("stats").innerHTML =
+      '<div class="stat"><b>'+open.length+'</b><span>задач в котле</span></div>'
+     +'<div class="stat late"><b>'+n(isLate)+'</b><span>просрочено — Филч уже идёт</span></div>'
+     +'<div class="stat wait"><b>'+n(function(t){return t.status==="Ждём ответа";})+'</b><span>ждут сову</span></div>'
+     +'<div class="stat free"><b>'+n(function(t){return !t.assignee;})+'</b><span>без хозяина, как бродячий боггарт</span></div>'
+     +'<div class="stat dec"><b>'+n(function(t){return t.type==="решение";})+'</b><span>развилок без решения</span></div>'
+     +'<div class="stat"><b style="color:var(--done)">'+S.tasks.filter(isDone).length+'</b><span>шалость удалась</span></div>';
+  }
+  function renderBanner(){
+    var b=$("banner");
+    if (S.snapshot){ b.innerHTML='<div class="note">Это снимок вкладки «Задачи» от '+SEED_AT+'. Только просмотр.</div>'; return; }
+    if (S.dbMissing){ b.innerHTML='<div class="note">Магглам вход закрыт: база задач недоступна в этом окне. Откройте штаб по ссылке в claude.ai под своим аккаунтом.</div>'; return; }
+    if (!S.canWrite){ b.innerHTML='<div class="note">Вы смотрите через витрину, как маггл на Косой переулок. Чтобы менять статусы и писать комментарии, попросите Екатерину Нечаеву выдать вам права редактора.</div>'; }
+    else if (!S.member || S.picking){
+      b.innerHTML='<div class="banner"><h2>Распределяющая шляпа спрашивает: кто вы?</h2><p>Выберите себя один раз — штаб запомнит и будет открываться на ваших задачах. Спорить со шляпой бесполезно.</p><div class="pick">'
+        +PPL.map(function(p){ return '<button type="button" data-me="'+esc(p)+'">'+esc(p)+'</button>'; }).join("")+'</div></div>';
+    } else b.innerHTML="";
+    $("who").hidden=!S.member;
+    $("whoName").textContent=S.member;
+  }
+  function render(){
+    renderBanner();
+    if (!S.loaded) return;
+    renderStats();
+    var t=vis(), el=$("view"), v=S.view;
+    var wide = v==="events"||v==="brief"||v==="meet"||v==="ai"||v==="sales"||v==="prompts";
+    $("stats").hidden = wide;
+    document.querySelector(".ctl").hidden = wide;
+    if (v==="events"){ renderEvents(el); }
+    else if (v==="sales"){ renderSales(el); }
+    else if (v==="ai"){ renderAi(el); }
+    else if (v==="prompts"){ if (!(document.activeElement && document.activeElement.id==="prQ")) renderPrompts(el); else renderPromptList(); }
+    else if (v==="brief"){ if (!(document.activeElement && document.activeElement.matches && document.activeElement.matches("[data-bt]"))) renderBrief(el); }
+    else if (v==="meet"){ var ut=$("upText"), utt=$("upTitle"); if (!(ut && (ut.value || (utt&&utt.value) || upFile || el.contains(document.activeElement)))) renderMeet(el); else renderMeetList(); }
+    else if (v==="mine"){
+      if (!S.member){ el.innerHTML='<div class="empty">Сначала примерьте шляпу выше — и здесь появятся ваши задачи.</div>'; }
+      else {
+        var mine=t.filter(function(x){ return x.assignee===S.member; });
+        var act=mine.filter(function(x){ return !isDone(x); });
+        var wk=plusDays(7);
+        el.innerHTML=grid([
+          {name:"Просрочено", alarm:true, hint:"Срок прошёл. Маховики времени у нас не выдают — закройте или перенесите", items:act.filter(isLate)},
+          {name:"Ближайшие 7 дней", items:act.filter(function(x){ return !isLate(x) && x.due && x.due<=wk && x.status!=="Ждём ответа"; })},
+          {name:"Ждём ответа", hint:"Заблокировано другим волшебником. Сова, видимо, заблудилась", items:act.filter(function(x){ return !isLate(x) && x.status==="Ждём ответа"; })},
+          {name:"Позже", items:act.filter(function(x){ return !isLate(x) && x.due && x.due>wk && x.status!=="Ждём ответа"; })},
+          {name:"Без срока", items:act.filter(function(x){ return !x.due && x.status!=="Ждём ответа"; })},
+          {name:"Готово", hint:"Шалость удалась — закрыто вами", items:mine.filter(isDone)}
+        ], "У вас нет задач. Подозрительно. Проверьте, не под Империусом ли вы.");
+      }
+    } else if (v==="board"){
+      el.innerHTML=columns(ST.map(function(s){
+        return {name:s, items:t.filter(function(x){ return x.status===s; }),
+                color:s==="Ждём ответа"?"#ffc46b":s==="Готово"?"#6fd6a8":null};
+      }));
+    } else if (v==="people"){
+      var g=PPL.map(function(p){ return {name:p, items:t.filter(function(x){ return x.assignee===p && !isDone(x); })}; });
+      g.push({name:"Без исполнителя", alarm:true, hint:"Сами не сделаются. Домовые эльфы бастуют",
+              items:t.filter(function(x){ return !x.assignee && !isDone(x); })});
+      el.innerHTML=grid(g);
+    } else if (v==="proj"){
+      el.innerHTML=grid(PRJ.map(function(p){ return {name:p, items:t.filter(function(x){ return x.project===p && !isDone(x); })}; }));
+    } else {
+      el.innerHTML=grid([
+        {name:"Просрочено", alarm:true, hint:"Срок прошёл, а задача живее всех живых", items:t.filter(isLate)},
+        {name:"Ждём ответа", hint:"Заблокировано другим волшебником. Сова, видимо, заблудилась", items:t.filter(function(x){ return !isDone(x) && x.status==="Ждём ответа"; })},
+        {name:"Решения без ответа", hint:"Само не решится — это вам не Феликс Фелицис", items:t.filter(function(x){ return !isDone(x) && x.type==="решение"; })},
+        {name:"Не распределено", hint:"Записано на планёрке, а исполнитель трансгрессировал", items:t.filter(function(x){ return !isDone(x) && !x.assignee; })},
+        {name:"На проверке", hint:"Сделано, ждёт придирчивого взгляда, как эссе по зельеварению", items:t.filter(function(x){ return x.status==="На проверке"; })}
+      ]);
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(b){
+      b.setAttribute("aria-selected", b.dataset.v===v?"true":"false"); });
+  }
+  function fillFilters(){
+    var fp=$("fp"), fw=$("fw"), pv=fp.value, wv=fw.value;
+    fp.innerHTML='<option value="">Все проекты</option>'+PRJ.map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
+    fw.innerHTML='<option value="">Все волшебники</option>'+PPL.map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
+    fp.value=pv; fw.value=wv;
+    $("eSt").innerHTML=ST.map(function(s){ return '<option>'+esc(s)+'</option>'; }).join("");
+    $("eWho").innerHTML='<option value="">— без исполнителя —</option>'+PPL.map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
+  }
+
+
+  /* ---------- боковая панель задачи ---------- */
+  function task(id){ for (var i=0;i<S.tasks.length;i++) if (S.tasks[i]._id===id) return S.tasks[i]; return null; }
+  function fillDrawer(){
+    var t=task(S.open); if(!t) return;
+    $("dNum").textContent=(t.num||"")+" · "+(t.project||"")+(t.type==="решение"?" · решение":"");
+    $("dTtl").textContent=t.title;
+    if (document.activeElement!==$("eSt")) $("eSt").value=t.status||ST[0];
+    if (document.activeElement!==$("eDue")) $("eDue").value=t.due||"";
+    if (document.activeElement!==$("eWho")) $("eWho").value=t.assignee||"";
+    $("dDet").textContent=t.details||"";
+    $("dSrc").textContent=t.source?("Источник: "+t.source):"";
+    $("dUpd").textContent=(t.updatedAt?("Изменено "+stamp(t.updatedAt)+(t.updatedBy?" · "+t.updatedBy:"")):"")
+      +(t.waiting?((t.updatedAt?" · ":"")+"Ждём: "+t.waiting):"");
+    ["eSt","eDue","eWho"].forEach(function(k){ $(k).disabled=!S.canWrite; });
+    $("compose").hidden=!S.canWrite;
+    $("dAi").innerHTML = t.claude && t.claude.offer ? aiBox(t,true) : "";
+  }
+  async function renderComments(){
+    var cs=S.comments, box=$("cList");
+    if (!cs.length){ box.innerHTML='<div class="empty">Тишина, как в Запретной секции после отбоя.</div>'; return; }
+    var names={};
+    if (S.user){ var ids=cs.map(function(c){ return c.by; }).filter(Boolean);
+      if (ids.length){ try{ names=await S.user.profiles(ids); }catch(e){} } }
+    box.innerHTML="";
+    cs.forEach(function(c){
+      var d=document.createElement("div"); d.className="cmt";
+      var by=document.createElement("span"); by.className="by";
+      by.textContent=c.member || (names[c.by]&&names[c.by].name) || "Участник";
+      var at=document.createElement("span"); at.className="at"; at.textContent=stamp(c.at);
+      var tx=document.createElement("div"); tx.className="tx"; tx.textContent=c.text;
+      d.appendChild(by); d.appendChild(at); d.appendChild(tx); box.appendChild(d);
+    });
+  }
+  function openTask(id){
+    S.open=id; S.comments=[]; $("saved").textContent=""; $("cText").value="";
+    fillDrawer(); renderComments();
+    $("drawer").classList.add("on"); $("scrim").classList.add("on"); $("drawer").setAttribute("aria-hidden","false");
+    if (S.unsubC){ S.unsubC(); S.unsubC=null; }
+    if (S.db){
+      S.unsubC=S.db.collection("tasks/"+id+"/comments").orderBy("at").limit(300).onSnapshot(function(snap){
+        S.comments=snap.docs.map(function(d){ return d.data(); }); renderComments();
+      }, function(){});
+    }
+    setTimeout(function(){ $("dClose").focus(); }, 50);
+  }
+  function closeTask(){
+    S.open=null; if (S.unsubC){ S.unsubC(); S.unsubC=null; }
+    $("drawer").classList.remove("on"); $("scrim").classList.remove("on"); $("drawer").setAttribute("aria-hidden","true");
+  }
+  var busy=false;
+  async function save(patch){
+    var t=task(S.open); if(!t || !S.db) return;
+    patch.updatedAt=new Date().toISOString(); patch.updatedBy=S.member||"";
+    $("saved").style.color="var(--dim)"; $("saved").textContent="Колдую…";
+    try{
+      while(busy) await new Promise(function(r){ setTimeout(r,60); });
+      busy=true;
+      await S.db.doc("tasks/"+t._id).update(patch);
+      $("saved").style.color="var(--done)"; $("saved").textContent="Заклинание сработало";
+    }catch(e){
+      $("saved").style.color="var(--late)";
+      if (e && e.code==="invalid_argument"){ S.canWrite=false; $("saved").textContent="Палочка не слушается: нужен доступ редактора."; render(); fillDrawer(); }
+      else $("saved").textContent="Заклинание сорвалось, попробуйте ещё раз.";
+    } finally { busy=false; }
+  }
+  async function sendComment(){
+    var txt=$("cText").value.trim(); if(!txt || !S.db || !S.open) return;
+    var id=S.open, t=task(id); $("cSend").disabled=true;
+    try{
+      await S.db.collection("tasks/"+id+"/comments").add({text:txt.slice(0,4000), by:S.uid||"", member:S.member||"", at:new Date().toISOString()});
+      $("cText").value="";
+      await S.db.doc("tasks/"+id).update({comments:(t&&t.comments||0)+1});
+    }catch(e){
+      $("saved").style.color="var(--late)";
+      $("saved").textContent = e && e.code==="invalid_argument" ? "Сова не взлетела: нет прав писать комментарии." : "Сова не долетела, попробуйте ещё раз.";
+    }
+    $("cSend").disabled=false;
+  }
+
+
+  /* ---------- мероприятия и деньги ---------- */
+  var MNOM=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+  function ymNow(){ return today().slice(0,7); }
+  function ymShift(ym,k){ var y=+ym.slice(0,4), m=+ym.slice(5,7)-1+k; y+=Math.floor(m/12); m=((m%12)+12)%12; return y+"-"+String(m+1).padStart(2,"0"); }
+  function ymLabel(ym){ return MNOM[+ym.slice(5,7)-1]+" "+ym.slice(0,4); }
+  function money(n){ return Math.round(n).toLocaleString("ru-RU").replace(/ /g," ")+" ₽"; }
+  function int(n){ return Math.round(n).toLocaleString("ru-RU").replace(/ /g," "); }
+  function numOrNull(v){ if (v===""||v==null) return null; var n=Number(v); return isFinite(n)&&n>=0?n:null; }
+  function has(n){ return typeof n==="number" && isFinite(n); }
+  function salesOf(e,ym){ return e.sales && has(e.sales[ym]) ? e.sales[ym] : null; }
+  function evList(){ return S.events.filter(function(e){ return !e.archived; }).sort(function(a,b){
+    var oa=has(a.order)?a.order:999, ob=has(b.order)?b.order:999; return oa-ob || String(a.name).localeCompare(String(b.name),"ru"); }); }
+  function pct(a,b){ return b>0 ? Math.min(100, a/b*100) : 0; }
+
+
+  function renderEvents(el){
+    var ym=S.ym, evs=evList();
+    var fact=0, regs=0, filled=0;
+    evs.forEach(function(e){ var s=salesOf(e,ym); if (s!=null){ fact+=s; filled++; } if (has(e.regs)) regs+=e.regs; });
+    var plan=S.months[ym] && has(S.months[ym].plan) ? S.months[ym].plan : null;
+    var now=ymNow(), daysLeft=0;
+    if (ym===now){ var d=new Date(), last=new Date(d.getFullYear(), d.getMonth()+1, 0).getDate(); daysLeft=last-d.getDate()+1; }
+    else if (ym>now){ var y=+ym.slice(0,4), m=+ym.slice(5,7); daysLeft=new Date(y,m,0).getDate(); }
+    var left=plan!=null ? Math.max(0, plan-fact) : null;
+    var h='<section class="month"><div class="mtop"><span class="mlbl">Галлеоны по всем мероприятиям</span>'
+      +'<span class="mnav"><button type="button" data-act="mprev" aria-label="Предыдущий месяц">‹</button><b>'+esc(ymLabel(ym))+'</b><button type="button" data-act="mnext" aria-label="Следующий месяц">›</button></span></div>'
+      +'<div class="mfact"><span class="big">'+money(fact)+'</span>'
+      +(plan!=null ? '<span class="of">из '+money(plan)+'</span><span class="pct">'+Math.round(plan>0?fact/plan*100:0)+'%</span>' : '<span class="of">план не задан — прорицания не наш профиль</span>')
+      +(S.canWrite ? '<button class="mplan" type="button" data-act="plan">изменить план</button>' : '')+'</div>'
+      +'<div class="track"><div class="fill" style="width:'+pct(fact,plan||0)+'%"></div></div>'
+      +'<div class="mrow">'
+      +'<div class="mcell"><b>'+(left!=null?money(left):"—")+'</b><span>осталось до плана</span></div>'
+      +'<div class="mcell"><b>'+(daysLeft||"—")+'</b><span>'+(ym<now?"месяц закрыт":"дней до конца месяца")+'</span></div>'
+      +'<div class="mcell"><b>'+(left!=null&&daysLeft?money(left/daysLeft):"—")+'</b><span>нужно наколдовать в день</span></div>'
+      +'<div class="mcell"><b>'+int(regs)+'</b><span>регистраций сейчас</span></div>'
+      +'</div></section>';
+    h+='<div class="evhead"><div><h2>Мероприятия</h2><p>Цифры вносят ответственные, а не прорицатели. Продажи — сумма за '+esc(MNOM[+ym.slice(5,7)-1])+' по каждому мероприятию'
+      +(evs.length?', заполнено '+filled+' из '+evs.length:'')+'.</p></div>'
+      +(S.canWrite?'<button class="add" type="button" data-act="add">+ мероприятие</button>':'')+'</div>';
+    if (!evs.length) h+='<div class="empty">Мероприятий пока нет. Бал отменили?</div>';
+    else {
+      h+='<div class="evgrid">'+evs.map(function(e){
+        var s=salesOf(e,ym), age=e.updatedAt ? (Date.now()-new Date(e.updatedAt).getTime())/864e5 : null;
+        var stale=age==null || age>3;
+        var regBox='<div class="num"><div class="k">'+esc(e.unit||"Регистрации")+'</div>'
+          +(has(e.regs)?'<div class="v">'+int(e.regs)+'</div>':'<div class="v na">нет данных</div>')
+          +'<div class="p">'+(has(e.regsPlan)?'план '+int(e.regsPlan)+(has(e.regs)?' · '+Math.round(e.regsPlan>0?e.regs/e.regsPlan*100:0)+'%':''):'план не задан')+'</div>'
+          +(has(e.regsPlan)&&has(e.regs)?'<div class="track"><div class="fill mini" style="width:'+pct(e.regs,e.regsPlan)+'%"></div></div>':'')+'</div>';
+        var salBox='<div class="num"><div class="k">Продажи за '+esc(MNOM[+ym.slice(5,7)-1])+'</div>'
+          +(s!=null?'<div class="v">'+money(s)+'</div>':'<div class="v na">нет данных</div>')
+          +'<div class="p">'+(has(e.salesPlan)?'план '+money(e.salesPlan):'план не задан')+'</div>'
+          +(has(e.salesPlan)&&s!=null?'<div class="track"><div class="fill mini" style="width:'+pct(s,e.salesPlan)+'%"></div></div>':'')+'</div>';
+        return '<article class="ev'+(stale?' stale':'')+'"><div class="evt"><div><h3>'+esc(e.name)+'</h3>'
+          +(e.when?'<div class="when">'+esc(e.when)+'</div>':'')+'</div>'
+          +(S.canWrite?'<button class="lnk" type="button" data-ev="'+esc(e._id)+'">внести цифры</button>':'')+'</div>'
+          +'<div class="nums">'+regBox+salBox+'</div>'
+          +(e.note?'<p class="evnote">'+esc(e.note)+'</p>':'')
+          +(e.auto?'<div class="evupd">Из GetCourse'+(e.autoAt?' · '+esc(e.autoAt):'')+'</div>':'')+'<div class="evupd'+(stale?' old':'')+'">'+(e.updatedAt?'Обновлено '+esc(stamp(e.updatedAt))+(e.updatedBy?' · '+esc(e.updatedBy):'')+(stale?' — пора обновить, цифры покрываются паутиной':''):'Цифры ещё не вносили. Ждём сову')+'</div>'
+          +'</article>';
+      }).join("")+'</div>';
+    }
+    el.innerHTML=h;
+  }
+
+
+  var evEditing=null;
+  function openModal(id){ $(id).classList.add("on"); $("scrim").classList.add("on"); }
+  function closeModals(){ ["evModal","planModal"].forEach(function(id){ $(id).classList.remove("on"); }); if (!S.open) $("scrim").classList.remove("on"); evEditing=null; }
+  function openEv(id){
+    evEditing=id; var e=null; S.events.forEach(function(x){ if (x._id===id) e=x; });
+    var mon=MNOM[+S.ym.slice(5,7)-1];
+    $("emTtl").textContent=e?e.name:"Новое мероприятие";
+    $("emName").value=e?e.name:""; $("emWhen").value=e&&e.when||"";
+    $("emRegs").value=e&&has(e.regs)?e.regs:""; $("emRegsPlan").value=e&&has(e.regsPlan)?e.regsPlan:"";
+    var s=e?salesOf(e,S.ym):null; $("emSales").value=s!=null?s:"";
+    $("emSalesL").textContent="Продажи за "+mon+", ₽";
+    $("emSalesPlan").value=e&&has(e.salesPlan)?e.salesPlan:""; $("emNote").value=e&&e.note||"";
+    $("emArchive").hidden=!e; $("emSaved").textContent="";
+    openModal("evModal"); setTimeout(function(){ (e?$("emRegs"):$("emName")).focus(); },50);
+  }
+  async function saveEv(){
+    if (!S.db) return;
+    var name=$("emName").value.trim(); if (!name){ $("emSaved").style.color="var(--late)"; $("emSaved").textContent="Даже у заклинания есть название. Укажите его."; return; }
+    var patch={name:name, when:$("emWhen").value.trim(), regs:numOrNull($("emRegs").value), regsPlan:numOrNull($("emRegsPlan").value),
+      salesPlan:numOrNull($("emSalesPlan").value), note:$("emNote").value.trim(), updatedAt:new Date().toISOString(), updatedBy:S.member||""};
+    var sales={}; sales[S.ym]=numOrNull($("emSales").value); patch.sales=sales;
+    $("emSave").disabled=true; $("emSaved").style.color="var(--dim)"; $("emSaved").textContent="Сохраняю…";
+    try{
+      if (evEditing) await S.db.doc("events/"+evEditing).update(patch);
+      else { patch.order=S.events.length+1; patch.archived=false; await S.db.collection("events").doc("ev-"+Date.now().toString(36)).set(patch); }
+      closeModals();
+    }catch(err){
+      $("emSaved").style.color="var(--late)";
+      $("emSaved").textContent= err&&err.code==="invalid_argument" ? "Палочка не слушается: нет прав на изменение." : "Заклинание сорвалось, попробуйте ещё раз.";
+    }
+    $("emSave").disabled=false;
+  }
+  async function archiveEv(){
+    if (!evEditing || !S.db) return;
+    try{ await S.db.doc("events/"+evEditing).update({archived:true, updatedAt:new Date().toISOString(), updatedBy:S.member||""}); closeModals(); }
+    catch(err){ $("emSaved").style.color="var(--late)"; $("emSaved").textContent="Заклинание сорвалось, попробуйте ещё раз."; }
+  }
+  function openPlan(){ var m=S.months[S.ym]; $("pmPlan").value=m&&has(m.plan)?m.plan:""; $("pmSaved").textContent=""; openModal("planModal"); }
+  async function savePlan(){
+    var n=numOrNull($("pmPlan").value); if (!S.db) return;
+    try{ await S.db.doc("months/"+S.ym).set({plan:n, updatedAt:new Date().toISOString(), updatedBy:S.member||""}); closeModals(); }
+    catch(err){ $("pmSaved").style.color="var(--late)"; $("pmSaved").textContent= err&&err.code==="invalid_argument" ? "Палочка не слушается: нет прав на изменение." : "Заклинание сорвалось, попробуйте ещё раз."; }
+  }
+  $("emSave").onclick=saveEv; $("emCancel").onclick=closeModals; $("emArchive").onclick=archiveEv;
+  $("pmSave").onclick=savePlan; $("pmCancel").onclick=closeModals;
+
+
+  /* ---------- события ---------- */
+  document.addEventListener("click",function(e){
+    var act=e.target.closest("[data-act]");
+    if (act){ var a=act.dataset.act;
+      if (a==="add") openEv(null); else if (a==="plan") openPlan();
+      else if (a==="mprev"){ S.ym=ymShift(S.ym,-1); render(); } else if (a==="mnext"){ S.ym=ymShift(S.ym,1); render(); }
+      return; }
+    var ev=e.target.closest("[data-ev]"); if (ev){ openEv(ev.dataset.ev); return; }
+    var tab=e.target.closest(".tab"); if (tab){ S.view=tab.dataset.v; store("shtab.view",S.view); render(); return; }
+    var c=e.target.closest(".card"); if (c){ openTask(c.dataset.id); return; }
+    var me=e.target.closest("[data-me]"); if (me){ setMember(me.dataset.me); return; }
+  });
+  $("whoChange").onclick=function(){ S.picking=true; renderBanner(); };
+  $("dClose").onclick=closeTask; $("scrim").onclick=function(){ closeModals(); if (S.open) closeTask(); };
+  document.addEventListener("keydown",function(e){ if (e.key==="Escape"){ if (evEditing!==null || $("evModal").classList.contains("on") || $("planModal").classList.contains("on")) closeModals(); else if (S.open) closeTask(); } });
+  $("fp").onchange=function(){ S.f.p=this.value; render(); };
+  $("fw").onchange=function(){ S.f.w=this.value; render(); };
+  var qt; $("fq").oninput=function(e){ S.f.q=e.target.value; clearTimeout(qt); qt=setTimeout(render,160); };
+  $("eSt").onchange=function(){ save({status:this.value}); };
+  $("eDue").onchange=function(){ save({due:this.value||""}); };
+  $("eWho").onchange=function(){ save({assignee:this.value||""}); };
+  $("cSend").onclick=sendComment;
+  $("cText").addEventListener("keydown",function(e){ if ((e.metaKey||e.ctrlKey) && e.key==="Enter") sendComment(); });
+
+
+  async function setMember(name){
+    S.member=name; S.picking=false; store("shtab.member",name);
+    if (S.view!=="mine"){ S.view="mine"; store("shtab.view","mine"); }
+    render();
+    if (S.db && S.uid){ try{ await S.db.doc("data/users/"+S.uid+"/profile").set({member:name}); }catch(e){} }
+  }
+
+
+
+
+  /* ---------- архив ---------- */
+  S.allTasks=[]; S.showArch=load("shtab.arch")==="1";
+  function applyArch(){
+    var a=S.allTasks.filter(function(x){ return x.archived; });
+    S.tasks=S.showArch?S.allTasks.slice():S.allTasks.filter(function(x){ return !x.archived; });
+    var b=$("archBtn"); if (b){ b.hidden=!a.length; b.textContent=S.showArch?("Скрыть архив ("+a.length+")"):("Архив прошедших мероприятий: "+a.length+" — показать"); }
+  }
+  document.addEventListener("click",function(e){ if (e.target && e.target.id==="archBtn"){ S.showArch=!S.showArch; store("shtab.arch",S.showArch?"1":"0"); applyArch(); render(); } });
+
+
+  /* ---------- отдел продаж ---------- */
+  var OPPL=["Настя","Юля","Таня"];
+  function renderSales(el){
+    var b=S.sales;
+    if (!b){ el.innerHTML='<div class="empty">Данные отдела продаж в пути: Claude выносит их из GetCourse и планёрок, как гоблины золото из хранилища.</div>'; return; }
+    var ym=ymNow(), fact=0; evList().forEach(function(e){ var s=salesOf(e,ym); if (s!=null) fact+=s; });
+    var plan=S.months[ym]&&has(S.months[ym].plan)?S.months[ym].plan:null, op=has(b.planOP)?b.planOP:null;
+    var d=new Date(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(), dl=last-d.getDate()+1;
+    var leftOp=op!=null?Math.max(0,op-fact):null;
+    var h='<section class="month"><div class="mtop"><span class="mlbl">Отдел продаж · '+esc(ymLabel(ym))+'</span><span class="evupd">Обновлено '+esc(stamp(b.updatedAt))+(b.source?' · '+esc(b.source):'')+'</span></div>'
+      +'<div class="mfact"><span class="big">'+money(fact)+'</span>'+(op!=null?'<span class="of">из '+money(op)+' — план отдела продаж</span><span class="pct">'+Math.round(op>0?fact/op*100:0)+'%</span>':'')+'</div>'
+      +'<div class="track"><div class="fill" style="width:'+pct(fact,op||0)+'%"></div></div>'
+      +'<div class="sl-kpis">'
+      +'<div class="sl-k"><b>'+(leftOp!=null?money(leftOp):'—')+'</b><span>осталось до плана отдела</span></div>'
+      +'<div class="sl-k"><b>'+(leftOp!=null?money(leftOp/dl):'—')+'</b><span>нужно в день · дней осталось: '+dl+'</span></div>'
+      +'<div class="sl-k"><b>'+(plan!=null?money(plan):'—')+'</b><span>план проекта на месяц</span></div>'
+      +'<div class="sl-k"><b>'+(b.conv&&has(b.conv.all)?b.conv.all+'%':'—')+'</b><span>конверсия заказ → оплата, '+esc(b.conv&&b.conv.period||'')+'</span></div>'
+      +'</div><p class="evnote" style="margin-top:10px">Факт — оплаты всех мероприятий за месяц из вкладки «Галлеоны и мероприятия», обновляется из GetCourse дважды в день.</p></section>';
+    if (b.today&&b.today.length){
+      h+='<div class="sl-sec"><div><h2>Главное сейчас</h2><p>Что делаем в ближайшие дни — по итогам планёрки отдела продаж.</p></div></div><div class="sl-today">'
+        +b.today.map(function(x){ return '<div class="sl-do"><b>'+esc(x.t)+'</b><span class="w">'+esc(x.who||'')+'</span><p>'+esc(x.text)+'</p></div>'; }).join('')+'</div>';
+    }
+    if (b.conv&&b.conv.managers){
+      h+='<div class="sl-sec"><div><h2>Менеджеры</h2><p>Конверсия из заказа в оплату за '+esc(b.conv.period||'')+'.</p></div></div><div class="sl-mgr">'
+        +b.conv.managers.map(function(m){ return '<div class="sl-m"><div class="n">'+esc(m.name)+'</div><div class="v">'+esc(String(m.v).replace('.',','))+'%</div><div class="t">'+esc(m.note||'')+'</div><div class="sl-bar"><i style="width:'+Math.min(100,m.v)+'%"></i></div></div>'; }).join('')+'</div>';
+    }
+    var L=b.lists||[], cur=L.filter(function(x){ return x.id===S.slList; })[0]||L[0];
+    if (cur){
+      var sum=cur.rows.reduce(function(a,r){ return a+(r.sum||0); },0);
+      h+='<div class="sl-sec"><div><h2>Списки для работы</h2><p>'+esc(cur.hint||'')+'</p></div>'+(cur.link?'<div class="sl-links"><a href="'+esc(cur.link)+'" target="_blank" rel="noopener">Открыть сегмент</a></div>':'')+'</div>'
+        +'<div class="sl-seg">'+L.map(function(x){ return '<button type="button" data-sl="'+esc(x.id)+'" aria-pressed="'+(x.id===cur.id)+'">'+esc(x.title)+' · '+x.rows.length+'</button>'; }).join('')+'</div>'
+        +'<div class="sl-tbl"><table><thead><tr><th>Клиент</th><th>Заказ</th><th>Дата</th><th>Продукт</th><th>Статус</th><th style="text-align:right">Сумма, ₽</th><th>Менеджер</th><th>Пометка</th></tr></thead><tbody>'
+        +cur.rows.map(function(r){ return '<tr><td class="nm">'+esc(r.n)+'</td><td class="mono"><a href="https://institut-nlp.online/sales/control/deal/update/id/'+esc(r.id)+'" target="_blank" rel="noopener">#'+esc(r.num)+'</a></td><td class="mono">'+esc(r.d)+'</td><td>'+esc(r.p)+'</td><td><span class="sl-st'+(r.st==='Новый'?' new':'')+'">'+esc(r.st)+'</span></td><td class="r">'+(r.sum?int(r.sum):'—')+'</td><td>'+esc(r.m||'—')+'</td><td class="fl">'+esc(r.f||'')+'</td></tr>'; }).join('')
+        +'</tbody></table></div>'+(sum?'<p class="evnote" style="margin-top:8px">Сумма списка: '+money(sum)+'</p>':'');
+    }
+    if (b.funnel){
+      var mx=Math.max.apply(null,b.funnel.map(function(f){ return f.a; }));
+      h+='<div class="sl-sec"><div><h2>Заявки сентября → покупки</h2><p>Синяя полоса — заявки, зелёная — купили что-то после заявки. Справа — сумма их покупок.</p></div></div><div class="sl-fn">'
+        +b.funnel.map(function(f){ return '<div class="sl-fr"><span>'+esc(f.f)+'</span><span class="b"><i style="width:'+(f.a/mx*100)+'%"></i><em style="width:'+(f.b/mx*100)+'%"></em></span><span class="r">'+f.b+' из '+f.a+(f.s?' · '+int(f.s):'')+'</span></div>'; }).join('')+'</div>';
+    }
+    if (b.facts){ h+='<div class="sl-sec"><div><h2>Где ещё лежат галлеоны</h2></div></div><div class="sl-facts">'+b.facts.map(function(f){ return '<div class="sl-k"><b>'+esc(f.v)+'</b><span>'+esc(f.t)+'</span></div>'; }).join('')+'</div>'; }
+    h+='<div class="sl-sec"><div><h2>Правила и аргументы</h2></div></div><div class="sl-two">'
+      +(b.rules?'<div class="sl-list"><h3>Правила отдела продаж</h3><ol>'+b.rules.map(function(r){ return '<li>'+esc(r)+'</li>'; }).join('')+'</ol></div>':'')
+      +(b.custdev?'<div class="sl-list"><h3>Что говорят анкеты — 731 участник</h3><ul>'+b.custdev.map(function(r){ return '<li>'+esc(r)+'</li>'; }).join('')+'</ul></div>':'')
+      +(b.decisions?'<div class="sl-list"><h3>Решения планёрки</h3><ul>'+b.decisions.map(function(r){ return '<li>'+esc(r)+'</li>'; }).join('')+'</ul></div>':'')
+      +'</div>';
+    var tk=S.tasks.filter(function(x){ return !isDone(x) && (OPPL.indexOf(x.assignee)>=0 || x.project==="Продажи и финансы"); });
+    h+='<div class="sl-sec"><div><h2>Задачи отдела продаж</h2><p>Открытые задачи Насти, Юли, Тани и проекта «Продажи и финансы».</p></div></div>'
+      +grid(OPPL.map(function(p){ return {name:p, items:tk.filter(function(x){ return x.assignee===p; })}; })
+        .concat([{name:"Другие по продажам", items:tk.filter(function(x){ return OPPL.indexOf(x.assignee)<0; })}]), "Открытых задач нет. Чудеса случаются.");
+    if (b.segments||b.pages){
+      h+='<div class="sl-sec"><div><h2>Ссылки</h2><p>Сегменты открываются в GetCourse, страницы — в Claude.</p></div></div><div class="sl-links">'
+        +(b.pages||[]).map(function(x){ return '<a class="pg" href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.l)+'</a>'; }).join('')
+        +(b.segments||[]).map(function(x){ return '<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.l)+'</a>'; }).join('')+'</div>';
+    }
+    el.innerHTML=h;
+  }
+  document.addEventListener("click",function(e){ var s=e.target.closest("[data-sl]"); if (s){ S.slList=s.dataset.sl; store("shtab.sl",S.slList); render(); } });
+  S.slList=load("shtab.sl")||"open";
+
+
+  /* ---------- Claude может ---------- */
+  var AIST={offered:"Claude может сделать",approved:"Claude: одобрено",working:"Claude делает",done:"Claude сделал",declined:"не нужно"};
+  function aiBox(t, inDrawer){
+    var c=t.claude||{}, st=c.state||"offered";
+    var h='<div class="ai" data-ai="'+esc(t._id)+'"><div class="lbl">'+esc((c.role||"Claude")+' · '+(c.scope==="part"?"могу сделать часть":"могу сделать вместо"))+'</div>'
+      +(inDrawer?'':'<button type="button" class="tk" data-open="'+esc(t._id)+'">'+esc((t.num||"")+' · '+t.title)+(t.assignee?' — '+esc(t.assignee):'')+'</button>')
+      +'<div class="off">'+esc(c.offer||"")+'</div>'
+      +(c.how?'<div class="how">'+esc(c.how)+'</div>':'')
+      +(c.needs?'<div class="need">Нужно от команды: '+esc(c.needs)+'</div>':'')
+      +(c.result?'<div class="res">Результат: '+linkify(c.result)+'</div>':'')
+      +(st!=="offered"?'<div class="how">'+esc(AIST[st]||st)+(c.by?' · '+esc(c.by):'')+'</div>':'');
+    if (S.canWrite){
+      if (st==="offered") h+='<div class="acts"><button type="button" class="yes" data-aia="approved">Да, делай</button><button type="button" data-aia="declined">Не нужно</button></div>';
+      else if (st==="approved") h+='<div class="acts"><button type="button" data-aia="offered">Отменить</button></div>';
+      else if (st==="declined") h+='<div class="acts"><button type="button" data-aia="offered">Вернуть предложение</button></div>';
+      else if (st==="done"){
+        var sd=t.send||{};
+        if (sd.state==="sent") h+='<div class="how">Отправлено в Telegram'+(sd.sentAt?' · '+esc(fmtSend(sd.sentAt)):'')+(sd.by?' · одобрила '+esc(sd.by):'')+'</div>';
+        else if (sd.state==="queued") h+='<div class="how">В очереди на отправку в Telegram'+(sd.by?' · '+esc(sd.by):'')+'</div><div class="acts"><button type="button" data-send="cancel">Отменить отправку</button></div>';
+        else h+='<div class="acts"><button type="button" class="yes" data-send="queued">Отправить в работу</button></div>';
+      }
+    }
+    return h+'</div>';
+  }
+  function linkify(s){ return esc(s).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+  function renderAi(el){
+    var all=S.tasks.filter(function(t){ return t.claude && t.claude.offer; });
+    var g=function(st){ return all.filter(function(t){ return (t.claude.state||"offered")===st; }); };
+    var sec=function(name,hint,items){ return items.length?'<section class="group"><div class="ghead"><span class="gname">'+esc(name)+'</span><span class="gnum">'+items.length+'</span></div>'+(hint?'<div class="ghint">'+esc(hint)+'</div>':'')+'<div class="stack">'+items.map(function(t){ return aiBox(t,false); }).join("")+'</div></section>':''; };
+    var h='<div class="bhead"><div><h2>Что Claude, наш домовой эльф, может сделать за команду</h2><p>Каждое утро Claude смотрит открытые задачи и предлагает: сделать целиком или подготовить часть. Нажмите «Да, делай» — результат появится в карточке задачи, а задача уйдёт на проверку исполнителю. Носок дарить не нужно — он не уйдёт.</p></div></div>';
+    var body=sec("Предложения","Решите: делать или нет. Эльф ждёт приказа",g("offered"))+sec("В очереди","Claude возьмёт в ближайший запуск",g("approved").concat(g("working")))+sec("Сделано","Проверьте результат и нажмите «Отправить в работу» — карточка уйдёт исполнителю в группу Telegram",g("done"));
+    el.innerHTML=h+(body?'<div class="bgrid">'+body+'</div>':'<div class="empty">Предложений пока нет, эльф отдыхает. Claude соберёт их к 8:40 утра по будням.</div>');
+  }
+  async function setAi(id, st){
+    var t=task(id); if(!t||!S.db) return;
+    try{ await S.db.doc("tasks/"+id).update({claude:{state:st, by:S.member||"", at:new Date().toISOString()}}); }
+    catch(e){ alertLine(e&&e.code==="invalid_argument"?"Палочка не слушается: нет прав на изменение.":"Заклинание сорвалось, попробуйте ещё раз."); }
+  }
+  document.addEventListener("click",function(e){ var b=e.target.closest("button[data-aia]"); if(b){ setAi(b.closest("[data-ai]").dataset.ai, b.dataset.aia); } });
+  function fmtSend(iso){ try{ var d=new Date(iso); return d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"}); }catch(e){ return ""; } }
+  async function setSend(id, act){
+    var t=task(id); if(!t||!S.db) return;
+    var v = act==="cancel" ? {state:"", by:S.member||"", at:new Date().toISOString()} : {state:"queued", by:S.member||"", at:new Date().toISOString()};
+    try{ await S.db.doc("tasks/"+id).update({send:v}); }
+    catch(e){ alertLine(e&&e.code==="invalid_argument"?"Палочка не слушается: нет прав на изменение.":"Заклинание сорвалось, попробуйте ещё раз."); }
+  }
+  document.addEventListener("click",function(e){ var b=e.target.closest("button[data-send]"); if(b){ setSend(b.closest("[data-ai]").dataset.ai, b.dataset.send); } });
+
+
+  /* ---------- книга заклинаний ---------- */
+  S.prompts=[]; S.prQ=""; S.prOpen={};
+  var PRF=[["prompt","промт"],["knowledge","базу знаний"],["packaging","упаковку"]];
+  function renderPrompts(el){
+    el.innerHTML='<div class="pr-top"><div><h2>Книга заклинаний — рабочие промты команды</h2><p>Скопируйте промт и вставьте в чат с Claude или ChatGPT. Если у промта есть база знаний — приложите её вторым сообщением. Новые промты Claude добавляет сюда сам.</p></div>'
+      +'<input id="prQ" type="search" placeholder="Акцио, промт…" aria-label="Поиск по промтам" value="'+esc(S.prQ)+'"></div><div id="prList"></div>';
+    renderPromptList();
+  }
+  function renderPromptList(){
+    var box=$("prList"); if(!box) return;
+    var q=S.prQ.trim().toLowerCase();
+    var L=S.prompts.filter(function(p){ return !q || ((p.title||"")+" "+(p.project||"")+" "+(p.role||"")+" "+(p.usage||"")+" "+(p.prompt||"")).toLowerCase().indexOf(q)>=0; });
+    if(!L.length){ box.innerHTML='<div class="empty">'+(S.prompts.length?'Ничего не нашлось. Попробуйте другое слово.':'Книга пока пуста. Claude добавит промты сюда.')+'</div>'; return; }
+    var groups={}, order=[];
+    L.sort(function(a,b){ return String(a.project||"").localeCompare(String(b.project||""),"ru") || String(a.title||"").localeCompare(String(b.title||""),"ru"); })
+     .forEach(function(p){ var g=p.project||"Без проекта"; if(!groups[g]){ groups[g]=[]; order.push(g); } groups[g].push(p); });
+    box.innerHTML=order.map(function(g){
+      return '<div class="pr-grp">'+esc(g)+' · '+groups[g].length+'</div><div class="pr-list">'+groups[g].map(function(p){
+        var open=S.prOpen[p._id];
+        var btns=PRF.filter(function(f){ return p[f[0]]; }).map(function(f,i){ return '<button type="button"'+(i===0?' class="yes"':'')+' data-prc="'+esc(p._id)+'" data-f="'+f[0]+'">Скопировать '+f[1]+'</button>'; }).join("");
+        return '<article class="pr"><h3>'+esc(p.title||p._id)+'</h3>'
+          +'<div class="meta">'+(p.role?'<span class="chip">'+esc(p.role)+'</span>':'')+(p.version?'<span class="chip">версия '+esc(p.version)+'</span>':'')+(p.updatedAt?'<span class="chip">'+esc(stamp(p.updatedAt))+'</span>':'')+'</div>'
+          +(p.usage?'<p class="use">'+esc(p.usage)+'</p>':'')
+          +'<div class="acts">'+btns+'<button type="button" data-prv="'+esc(p._id)+'">'+(open?'Свернуть':'Показать текст')+'</button></div>'
+          +'<div class="ok" id="prok-'+esc(p._id)+'"></div>'
+          +(open?'<pre>'+esc(p.prompt||"")+(p.knowledge?'\n\n———— БАЗА ЗНАНИЙ ————\n\n'+esc(p.knowledge):'')+'</pre>':'')
+          +'</article>';
+      }).join("")+'</div>';
+    }).join("");
+  }
+  function prById(id){ for(var i=0;i<S.prompts.length;i++) if(S.prompts[i]._id===id) return S.prompts[i]; return null; }
+  document.addEventListener("input",function(e){ if(e.target && e.target.id==="prQ"){ S.prQ=e.target.value; renderPromptList(); } });
+  document.addEventListener("click",function(e){
+    var v=e.target.closest("[data-prv]"); if(v){ S.prOpen[v.dataset.prv]=!S.prOpen[v.dataset.prv]; renderPromptList(); return; }
+    var c=e.target.closest("[data-prc]"); if(!c) return;
+    var p=prById(c.dataset.prc); if(!p) return; var txt=String(p[c.dataset.f]||""), ok=$("prok-"+p._id);
+    var done=function(){ if(ok) ok.textContent="Скопировано — вставьте в чат"; setTimeout(function(){ if(ok) ok.textContent=""; },4000); };
+    var fallback=function(){ S.prOpen[p._id]=true; renderPromptList(); var pre=document.querySelector("#prList article .ok#prok-"+CSS.escape(p._id)); var el=pre&&pre.parentNode.querySelector("pre"); if(el){ var r=document.createRange(); r.selectNodeContents(el); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } var o=$("prok-"+p._id); if(o) o.textContent="Текст выделен — нажмите Cmd+C / Ctrl+C"; };
+    try{ navigator.clipboard.writeText(txt).then(done, fallback); }catch(err){ fallback(); }
+  });
+
+
+  /* ---------- вопросы утра ---------- */
+  var bTyping=null;
+  function latestBrief(){ var b=null; S.briefs.forEach(function(x){ if(!b || x._id>b._id) b=x; }); return b; }
+  function renderBrief(el){
+    var b=latestBrief();
+    if (!b){ el.innerHTML='<div class="empty">Утренний допрос ещё не начался. Claude собирает их по будням в 8:40 по Москве — по просроченным задачам, срокам на сегодня, задачам без исполнителя и зависшим решениям.</div>'; return; }
+    var items=b.items||[], ans=b.answers||{}, done=items.filter(function(it){ return ans[it.i]; }).length;
+    var groups={}, order=[];
+    items.forEach(function(it){ var w=it.who||"Без исполнителя"; if(!groups[w]){ groups[w]=[]; order.push(w); } groups[w].push(it); });
+    var d=b._id.split("-");
+    var h='<div class="bhead"><div><h2>Вопросы команде на '+parseInt(d[2],10)+' '+MON[parseInt(d[1],10)-1]+'</h2><p>Зачитайте на планёрке тоном строгого декана. Ответ сразу меняет задачу и сохраняется в её комментариях.</p></div>'
+      +'<span class="bprog">отвечено '+done+' из '+items.length+'</span></div>';
+    if (b.intro) h+='<p class="sub" style="margin:-4px 0 14px">'+esc(b.intro)+'</p>';
+    h+='<div class="bgrid">'+order.map(function(w){
+      return '<section class="group"><div class="ghead"><span class="gname">'+esc(w)+'</span><span class="gnum">'+groups[w].length+'</span></div><div class="stack">'
+        +groups[w].map(function(it){
+          var a=ans[it.i], t=it.taskId?task(it.taskId):null;
+          return '<div class="bq'+(a?' ok':'')+(bTyping===String(it.i)?' typing':'')+'" data-bi="'+it.i+'"><div class="q">'+esc(it.q)+'</div>'
+            +(t?'<button type="button" class="tk" data-open="'+esc(t._id)+'">'+esc((t.num||"")+' · '+t.title)+'</button>':'')
+            +(a?'<div class="ans">✓ '+esc(a.text)+(a.by?' · '+esc(a.by):'')+'</div>':'')
+            +(S.canWrite && it.taskId ? '<div class="acts"><button type="button" data-ba="done">Сделано</button><button type="button" data-ba="work">В работе</button>'
+              +'<input type="date" data-ba="move" aria-label="Перенести срок"><button type="button" data-ba="text">Ответить</button></div>'
+              +'<div class="row2"><input type="text" placeholder="Ответ одной фразой, без «ну я почти»" data-bt><button class="go" type="button" data-ba="send">OK</button></div>' : '')
+            +'</div>';
+        }).join("")+'</div></section>';
+    }).join("")+'</div>';
+    el.innerHTML=h;
+  }
+  async function answerBrief(i, action, value){
+    var b=latestBrief(); if(!b || !S.db) return; var it=null; (b.items||[]).forEach(function(x){ if(String(x.i)===String(i)) it=x; }); if(!it) return;
+    var t=it.taskId?task(it.taskId):null, now=new Date().toISOString(), text="", patch={updatedAt:now, updatedBy:S.member||""};
+    if (action==="done"){ patch.status="Готово"; text="Сделано"; }
+    else if (action==="work"){ patch.status="В работе"; text="В работе"; }
+    else if (action==="move"){ if(!value) return; patch.due=value; text="Срок перенесён на "+fmt(value); }
+    else { text=value; patch=null; }
+    if (!text) return;
+    try{
+      if (t && patch){ while(busy) await new Promise(function(r){ setTimeout(r,60); }); busy=true; try{ await S.db.doc("tasks/"+t._id).update(patch); } finally { busy=false; } }
+      if (t){ await S.db.collection("tasks/"+t._id+"/comments").add({text:"Утренний вопрос: "+it.q+"\nОтвет: "+text, by:S.uid||"", member:S.member||"", at:now});
+        await S.db.doc("tasks/"+t._id).update({comments:(t.comments||0)+1}); }
+      var up={}; up[String(it.i)]={text:text, action:action, by:S.member||"", at:now};
+      await S.db.doc("briefs/"+b._id).update({answers:up});
+      bTyping=null;
+    }catch(e){ alertLine(e && e.code==="invalid_argument" ? "Палочка не слушается: нет прав на изменение." : "Заклинание сорвалось, попробуйте ещё раз."); }
+  }
+  function alertLine(msg){ var n=document.createElement("div"); n.className="note"; n.textContent=msg; $("banner").appendChild(n); setTimeout(function(){ n.remove(); },5000); }
+
+
+  /* ---------- планёрки ---------- */
+  var upFile=null;
+  function renderMeet(el){
+    var ms=S.meetings.slice().sort(function(a,b){ return String(b.createdAt||"").localeCompare(String(a.createdAt||"")); });
+    var STN={new:"ждёт разбора",processing:"разбирается",done:"разобрана",skipped:"не планёрка",error:"ошибка"};
+    var h='';
+    if (S.canWrite) h+='<section class="up"><h2>Слить планёрку в Омут памяти</h2><p>PDF-отчёт MyMeet, расшифровка Zoom (файл VTT или TXT), текстовый файл — или просто вставьте текст. Claude разберёт её в течение пары часов: новые задачи появятся в штабе, по старым обновятся статусы и сроки. Записи из MyMeet подтягиваются сами — загружать их сюда не обязательно.</p>'
+      +'<div class="fields"><label>Название<input id="upTitle" type="text" maxlength="120" placeholder="Планёрка отдела продаж"></label><label>Дата<input id="upDate" type="date"></label></div>'
+      +'<div class="drop" id="upDrop" tabindex="0" role="button">'+(upFile?esc(upFile.name)+' · '+Math.round(upFile.size/1024)+' КБ':'Перетащите файл сюда или нажмите, чтобы выбрать: PDF, TXT, MD или VTT из Zoom')+'</div>'
+      +'<input type="file" id="upInput" accept=".pdf,.txt,.md,.vtt,application/pdf,text/plain,text/markdown,text/vtt" hidden>'
+      +'<textarea id="upText" placeholder="…или вставьте текст расшифровки"></textarea>'
+      +'<div class="mbtns"><span class="saved" id="upSaved" style="margin:0"></span><button class="go" id="upGo" type="button">В Омут</button></div></section>';
+    h+='<div id="meetList">'+meetListHtml()+'</div>';
+    el.innerHTML=h;
+    bindUpload();
+  }
+  function renderMeetList(){ var m=$("meetList"); if (m) m.innerHTML=meetListHtml(); }
+  function meetListHtml(){
+    var ms=S.meetings.slice().sort(function(a,b){ return String(b.createdAt||"").localeCompare(String(a.createdAt||"")); });
+    var STN={new:"ждёт разбора",processing:"разбирается",done:"разобрана",skipped:"не планёрка",error:"ошибка"};
+    var h='';
+    h+='<div class="evhead"><div><h2>Воспоминания из Омута</h2><p>Из загрузок и из MyMeet. Если встреча помечена «не планёрка», а задачи в ней были — нажмите «Разобрать».</p></div></div>';
+    h+= ms.length ? '<div class="mlist">'+ms.map(function(m){
+      var st=m.status||"new", r=m.result||{};
+      return '<div class="mrow"><b>'+esc(m.title||"Без названия")+'</b><span class="chip">'+esc(m.date?fmt(m.date):"")+'</span>'
+        +'<span class="chip">'+(m.source==="mymeet"?"MyMeet":"загрузка")+'</span><span class="st '+st+'">'+esc(STN[st]||st)+'</span>'
+        +(st==="done"?'<span class="chip">+'+(r.added||0)+' новых · '+(r.updated||0)+' обновлено</span>':'')
+        +(S.canWrite && (st==="skipped"||st==="error"||st==="done") ? '<button class="lnk" type="button" data-remeet="'+esc(m._id)+'">'+(st==="done"?"разобрать заново":"разобрать")+'</button>':'')
+        +(r.summary||m.note?'<div class="sum">'+esc(r.summary||m.note)+'</div>':'')+'</div>';
+    }).join("")+'</div>' : '<div class="empty">Омут памяти пока пуст.</div>';
+    return h;
+  }
+  function bindUpload(){
+    if (S.canWrite && $("upDrop")){
+      var dd=$("upDate"); if (dd && !dd.value) dd.value=today();
+      var drop=$("upDrop"), inp=$("upInput");
+      drop.onclick=function(){ inp.click(); };
+      drop.onkeydown=function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); inp.click(); } };
+      inp.onchange=function(){ if(inp.files[0]){ upFile=inp.files[0]; drop.textContent=upFile.name; drop.classList.add("on"); } };
+      drop.ondragover=function(e){ e.preventDefault(); drop.classList.add("on"); };
+      drop.ondrop=function(e){ e.preventDefault(); if(e.dataTransfer.files[0]){ upFile=e.dataTransfer.files[0]; drop.textContent=upFile.name; } };
+      $("upGo").onclick=uploadMeeting;
+    }
+  }
+  async function uploadMeeting(){
+    var s=$("upSaved"), title=$("upTitle").value.trim()||"Планёрка", date=$("upDate").value||today(), txt=$("upText").value.trim();
+    if (!upFile && !txt){ s.style.color="var(--late)"; s.textContent="Омут пуст: добавьте файл или текст."; return; }
+    $("upGo").disabled=true; s.style.color="var(--dim)"; s.textContent="Сливаю воспоминания…";
+    try{
+      var doc={title:title, date:date, source:"upload", status:"new", createdAt:new Date().toISOString(), by:S.member||""};
+      if (upFile){
+        if (!S.assets) throw {code:"no_assets"};
+        var ext=(upFile.name.split(".").pop()||"").toLowerCase();
+        var type= ext==="pdf"?"application/pdf": ext==="md"?"text/markdown":"text/plain";
+        var r=await S.assets.upload(upFile,{type:type});
+        doc.assetId=r.id; doc.fileName=upFile.name;
+      }
+      if (txt){
+        if (txt.length>90000){ if(!S.assets) throw {code:"no_assets"}; var r2=await S.assets.upload(new Blob([txt],{type:"text/plain"}),{type:"text/plain"}); doc.textAssetId=r2.id; }
+        else doc.text=txt;
+      }
+      await S.db.collection("meetings").doc("m-"+Date.now().toString(36)).set(doc);
+      upFile=null; $("upText").value=""; $("upTitle").value="";
+      s.style.color="var(--done)"; s.textContent="Воспоминание в Омуте. Разбор — в течение пары часов.";
+    }catch(e){
+      s.style.color="var(--late)";
+      s.textContent = e&&e.code==="too_large" ? "Файл больше 20 МБ." : e&&e.code==="unsupported_type" ? "Этот формат не подходит: нужен PDF, TXT, MD или VTT." : e&&e.code==="no_assets" ? "Загрузка файлов доступна только редакторам штаба." : "Не загрузилось, попробуйте ещё раз.";
+    }
+    $("upGo").disabled=false;
+  }
+
+
+  document.addEventListener("click",function(e){
+    var o=e.target.closest("[data-open]"); if (o){ openTask(o.dataset.open); return; }
+    var rm=e.target.closest("[data-remeet]"); if (rm && S.db){ S.db.doc("meetings/"+rm.dataset.remeet).update({status:"new", force:true}).catch(function(){}); return; }
+    var ba=e.target.closest("button[data-ba]"); if (ba){ var card=ba.closest("[data-bi]"), i=card.dataset.bi, a=ba.dataset.ba;
+      if (a==="text"){ bTyping= bTyping===i?null:i; card.classList.toggle("typing"); var inp=card.querySelector("[data-bt]"); if(inp) inp.focus(); return; }
+      if (a==="send"){ answerBrief(i,"text",(card.querySelector("[data-bt]").value||"").trim()); return; }
+      answerBrief(i,a); }
+  });
+  document.addEventListener("change",function(e){ var d=e.target.closest("input[data-ba=move]"); if (d){ answerBrief(d.closest("[data-bi]").dataset.bi,"move",d.value); } });
+  document.addEventListener("keydown",function(e){ var t=e.target.closest&&e.target.closest("[data-bt]"); if (t && e.key==="Enter"){ answerBrief(t.closest("[data-bi]").dataset.bi,"text",t.value.trim()); } });
+
+
+  /* ---------- запуск ---------- */
+  fillFilters(); render();
+  (async function(){
+    var db=null, user=null;
+    try{ db=await window.claude.use("db"); }catch(e){}
+    try{ user=await window.claude.use("user"); }catch(e){}
+    S.db=db; S.user=user;
+    if (user){
+      try{ S.uid=await user.id(); }catch(e){}
+      try{ var cw=await user.can("data.write"); if (cw===false) S.canWrite=false; }catch(e){}
+    }
+    S.member=load("shtab.member");
+    if (!db){
+      S.snapshot=true; S.canWrite=false; S.loaded=true;
+      // add unknown assignees and projects
+      SEED.forEach(function(t){
+        if (t.assignee && PPL.indexOf(t.assignee)===-1) PPL.push(t.assignee);
+        if (t.project && PRJ.indexOf(t.project)===-1) PRJ.push(t.project);
+      });
+      S.allTasks=SEED.slice();
+      if (!S.member && S.view==="mine"){ S.view="board"; }
+      fillFilters(); applyArch(); render();
+      return;
+    }
+    if (S.uid){
+      try{ var p=await db.doc("data/users/"+S.uid+"/profile").get();
+        if (p.exists && p.data().member){ S.member=p.data().member; store("shtab.member",S.member); } }catch(e){}
+    }
+    db.doc("meta/config").onSnapshot(function(s){
+      if (!s.exists) return; var d=s.data()||{};
+      if (Array.isArray(d.people)&&d.people.length) PPL=d.people;
+      if (Array.isArray(d.projects)&&d.projects.length) PRJ=d.projects;
+      if (Array.isArray(d.statuses)&&d.statuses.length) ST=d.statuses;
+      fillFilters(); render(); if (S.open) fillDrawer();
+    }, function(){});
+    db.collection("events").limit(300).onSnapshot(function(snap){
+      S.events=snap.docs.map(function(d){ var x=Object.assign({}, d.data()); x._id=d.id; return x; });
+      if (S.loaded) render();
+    }, function(){});
+    db.collection("prompts").limit(200).onSnapshot(function(snap){
+      S.prompts=snap.docs.map(function(d){ var x=Object.assign({}, d.data()); x._id=d.id; return x; });
+      if (S.loaded && S.view==="prompts") render();
+    }, function(){});
+    db.doc("sales/board").onSnapshot(function(s){ S.sales=s.exists?s.data():null; if (S.loaded && S.view==="sales") render(); }, function(){});
+    try{ S.assets=await window.claude.use("assets"); }catch(e){}
+    db.collection("briefs").limit(60).onSnapshot(function(snap){
+      S.briefs=snap.docs.map(function(d){ var x=Object.assign({}, d.data()); x._id=d.id; return x; });
+      if (S.loaded && S.view==="brief" && !document.activeElement.matches("[data-bt]")) render();
+    }, function(){});
+    db.collection("meetings").limit(300).onSnapshot(function(snap){
+      S.meetings=snap.docs.map(function(d){ var x=Object.assign({}, d.data()); x._id=d.id; delete x.text; return x; });
+      if (S.loaded && S.view==="meet" && !(document.activeElement && /upTitle|upText|upDate/.test(document.activeElement.id||""))) render();
+    }, function(){});
+    db.collection("months").limit(120).onSnapshot(function(snap){
+      var m={}; snap.docs.forEach(function(d){ m[d.id]=d.data(); }); S.months=m;
+      if (S.loaded) render();
+    }, function(){});
+    db.collection("tasks").limit(1000).onSnapshot(function(snap){
+      S.allTasks=snap.docs.map(function(d){ var x=Object.assign({}, d.data()); x._id=d.id; return x; });
+      applyArch();
+      S.loaded=true; render(); if (S.open) fillDrawer();
+    }, function(){
+      S.loaded=true; render(); $("view").innerHTML='<div class="empty">Задачи не призвались. Обновите страницу — иногда «Репаро» срабатывает.</div>';
+    });
+  })();
+})();
+</script>
+
+
+
+
+</body></html>
